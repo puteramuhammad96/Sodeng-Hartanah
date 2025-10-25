@@ -1,1 +1,117 @@
-<!-- index.html placeholder for v3.4 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sodeng Hartanah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="branding">
+        <h1>Sodeng Hartanah</h1>
+        <p class="tagline">“Kalau ngam kita deal”</p>
+      </div>
+      <nav class="chips">
+        <button class="chip active" data-filter="All">All</button>
+        <button class="chip" data-filter="Land">Land</button>
+        <button class="chip" data-filter="Subsale">Subsale</button>
+        <button class="chip" data-filter="Undercon">Undercon</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HOT LISTINGS HERO -->
+  <section id="hero" class="hero">
+    <div class="hero-inner container">
+      <div id="heroSlides" class="hero-slides"></div>
+      <div id="heroDots" class="hero-dots"></div>
+      <button class="hero-nav prev" aria-label="Previous">‹</button>
+      <button class="hero-nav next" aria-label="Next">›</button>
+    </div>
+  </section>
+
+  <section class="about">
+    <div class="container about-inner">
+      <img src="assets/profile.png" alt="Putera Muhammad Sholihin Bin Adul" class="avatar"/>
+      <div>
+        <h2>Putera Muhammad Sholihin Bin Adul</h2>
+        <p class="muted">Property Consultant at One Dream Legacy East Coast</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filter/search/sort bar -->
+  <section class="filterbar">
+    <div class="container filter-inner">
+      <input id="q" class="input" type="text" placeholder="Search by title or location..." />
+      <select id="type" class="input">
+        <option value="">All Types</option>
+        <option>Land</option>
+        <option>Subsale</option>
+        <option>Undercon</option>
+      </select>
+      <select id="location" class="input">
+        <option value="">All Locations</option>
+      </select>
+      <input id="minp" class="input" type="number" placeholder="Min Budget (RM)" min="0"/>
+      <input id="maxp" class="input" type="number" placeholder="Max Budget (RM)" min="0"/>
+      <select id="sort" class="input">
+        <option value="">Sort: Default</option>
+        <option value="plh">Price: Low → High</option>
+        <option value="phl">Price: High → Low</option>
+      </select>
+      <button id="apply" class="btn">Apply</button>
+      <button id="clear" class="btn outline">Reset</button>
+    </div>
+  </section>
+
+  <main class="container">
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> Sodeng Hartanah. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div id="contactBar" class="contact-bar">
+    <a class="fab fab-whatsapp" target="_blank" rel="noopener"
+       href="https://wa.me/601169429832?text=Hi%20Putera%2C%20saya%20nak%20tahu%20lebih%20lanjut%20tentang%20hartanah%20yang%20tuan%20iklankan">WA</a>
+    <a class="fab fab-call" href="tel:601169429832">Call</a>
+  </div>
+
+  <!-- Detail modal -->
+  <div id="modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button id="modalClose" class="modal-close" aria-label="Close">✕</button>
+      <div id="modalCarousel" class="modal-carousel"></div>
+      <div id="modalThumbs" class="modal-thumbs"></div>
+      <div class="modal-body">
+        <h2 id="modalTitle"></h2>
+        <div id="modalMeta" class="modal-meta"></div>
+        <div id="modalPrice" class="modal-price"></div>
+        <div id="modalSpecs" class="modal-specs"></div>
+        <div id="modalDetails" class="modal-details"></div>
+        <div class="modal-actions">
+          <a id="modalWA" class="btn" target="_blank" rel="noopener">WhatsApp</a>
+          <a id="modalCall" class="btn outline" href="tel:601169429832">Call</a>
+          <a id="modalMap" class="btn outline" target="_blank" rel="noopener" style="display:none">Open Map</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.SHEET_ID = '1_QVlknRUXnHS-imyDobUyj0HNsTzCkTnPAdHMJNYaO4';
+    window.WHATSAPP_NUMBER = '601169429832';
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
