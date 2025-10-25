@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css"/>
-  <meta name="description" content="Sodeng Hartanah — Property listings in Kuantan and East Coast. 'Kalau ngam kita deal'.">
 </head>
 <body>
   <header class="site-header">
@@ -17,7 +16,7 @@
         <h1>Sodeng Hartanah</h1>
         <p class="tagline">“Kalau ngam kita deal”</p>
       </div>
-      <nav class="filters">
+      <nav class="chips">
         <button class="chip active" data-filter="All">All</button>
         <button class="chip" data-filter="Land">Land</button>
         <button class="chip" data-filter="Subsale">Subsale</button>
@@ -26,6 +25,16 @@
     </div>
   </header>
 
+  <!-- HOT LISTINGS HERO -->
+  <section id="hero" class="hero">
+    <div class="hero-inner container">
+      <div id="heroSlides" class="hero-slides"></div>
+      <div id="heroDots" class="hero-dots"></div>
+      <button class="hero-nav prev" aria-label="Previous">‹</button>
+      <button class="hero-nav next" aria-label="Next">›</button>
+    </div>
+  </section>
+
   <section class="about">
     <div class="container about-inner">
       <img src="assets/profile.png" alt="Putera Muhammad Sholihin Bin Adul" class="avatar"/>
@@ -33,6 +42,31 @@
         <h2>Putera Muhammad Sholihin Bin Adul</h2>
         <p class="muted">Property Consultant at One Dream Legacy East Coast</p>
       </div>
+    </div>
+  </section>
+
+  <!-- Filter/search/sort bar -->
+  <section class="filterbar">
+    <div class="container filter-inner">
+      <input id="q" class="input" type="text" placeholder="Search by title or location..." />
+      <select id="type" class="input">
+        <option value="">All Types</option>
+        <option>Land</option>
+        <option>Subsale</option>
+        <option>Undercon</option>
+      </select>
+      <select id="location" class="input">
+        <option value="">All Locations</option>
+      </select>
+      <input id="minp" class="input" type="number" placeholder="Min Budget (RM)" min="0"/>
+      <input id="maxp" class="input" type="number" placeholder="Max Budget (RM)" min="0"/>
+      <select id="sort" class="input">
+        <option value="">Sort: Default</option>
+        <option value="plh">Price: Low → High</option>
+        <option value="phl">Price: High → Low</option>
+      </select>
+      <button id="apply" class="btn">Apply</button>
+      <button id="clear" class="btn outline">Reset</button>
     </div>
   </section>
 
@@ -46,16 +80,32 @@
     </div>
   </footer>
 
-  <!-- Floating contact bar (auto-hide on scroll) -->
   <div id="contactBar" class="contact-bar">
-    <a class="fab fab-whatsapp" target="_blank" rel="noopener" aria-label="WhatsApp"
-       href="https://wa.me/601169429832?text=Hi%20Putera%2C%20saya%20nak%20tahu%20lebih%20lanjut%20tentang%20hartanah%20yang%20tuan%20iklankan"
-       title="WhatsApp">
-      <svg viewBox='0 0 32 32' width='22' height='22' aria-hidden='true'><path d='M19.11 17.17c-.28-.14-1.64-.81-1.9-.9-.26-.1-.45-.14-.64.14-.19.29-.74.9-.9 1.08-.17.19-.33.21-.61.07-.28-.14-1.17-.43-2.24-1.38-.83-.74-1.39-1.65-1.55-1.93-.16-.29-.02-.45.12-.59.12-.12.28-.31.42-.47.14-.16.19-.26.28-.45.09-.19.05-.36-.02-.5-.07-.14-.64-1.54-.88-2.12-.23-.55-.47-.48-.64-.49-.16-.01-.35-.01-.54-.01-.19 0-.5.07-.76.36-.26.29-1 1-1 2.42 0 1.41 1.03 2.77 1.18 2.96.14.19 2.03 3.11 4.92 4.36.69.3 1.23.48 1.65.61.69.22 1.31.19 1.8.12.55-.08 1.64-.67 1.87-1.31.23-.64.23-1.19.16-1.31-.07-.12-.26-.19-.54-.33zM16 3C8.83 3 3 8.83 3 16c0 2.3.62 4.46 1.7 6.32L3 29l6.85-1.79C11.62 28.37 13.74 29 16 29c7.17 0 13-5.83 13-13S23.17 3 16 3zM16 26.9c-2.24 0-4.32-.73-6.02-1.97l-.43-.31-4.06 1.06 1.09-3.96-.32-.45A10.91 10.91 0 0 1 5.1 16C5.1 10 10 5.1 16 5.1S26.9 10 26.9 16 22 26.9 16 26.9z' fill='currentColor'/></svg>
-    </a>
-    <a class="fab fab-call" href="tel:601169429832" aria-label="Call Now" title="Call">
-      <svg viewBox='0 0 24 24' width='22' height='22' aria-hidden='true'><path d='M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.56.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h2.5a1 1 0 011 1 11.36 11.36 0 00.57 3.56 1 1 0 01-.24 1.01l-2.2 2.2z' fill='currentColor'/></svg>
-    </a>
+    <a class="fab fab-whatsapp" target="_blank" rel="noopener"
+       href="https://wa.me/601169429832?text=Hi%20Putera%2C%20saya%20nak%20tahu%20lebih%20lanjut%20tentang%20hartanah%20yang%20tuan%20iklankan">WA</a>
+    <a class="fab fab-call" href="tel:601169429832">Call</a>
+  </div>
+
+  <!-- Detail modal -->
+  <div id="modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button id="modalClose" class="modal-close" aria-label="Close">✕</button>
+      <div id="modalCarousel" class="modal-carousel"></div>
+      <div id="modalThumbs" class="modal-thumbs"></div>
+      <div class="modal-body">
+        <h2 id="modalTitle"></h2>
+        <div id="modalMeta" class="modal-meta"></div>
+        <div id="modalPrice" class="modal-price"></div>
+        <div id="modalSpecs" class="modal-specs"></div>
+        <div id="modalDetails" class="modal-details"></div>
+        <div class="modal-actions">
+          <a id="modalWA" class="btn" target="_blank" rel="noopener">WhatsApp</a>
+          <a id="modalCall" class="btn outline" href="tel:601169429832">Call</a>
+          <a id="modalMap" class="btn outline" target="_blank" rel="noopener" style="display:none">Open Map</a>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
