@@ -1,0 +1,60 @@
+
+:root{
+  --bg:#f7f7f8;
+  --card:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --primary:#1d4ed8; /* blue */
+  --wa:#25D366; /* whatsapp */
+  --call:#007AFF; /* iOS blue */
+  --shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);}
+
+.container{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+
+.site-header{position:sticky;top:0;background:#fff;border-bottom:1px solid #eee;z-index:50}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 0;gap:12px}
+.branding h1{margin:0;font-size:24px;letter-spacing:0.2px}
+.tagline{margin:4px 0 0 0;color:var(--muted);font-size:14px}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid #e5e7eb;background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;font-size:14px}
+.chip.active,.chip:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.about{background:#fff;border-bottom:1px solid #eee}
+.about-inner{display:flex;align-items:center;gap:16px;padding:24px 0}
+.avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;box-shadow:var(--shadow)}
+.muted{color:var(--muted);margin:6px 0 0}
+
+.grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:16px;padding:24px 0}
+@media (min-width:640px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media (min-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+
+.card{background:var(--card);border:1px solid #eee;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.card-img{width:100%;height:180px;object-fit:cover;background:#ddd}
+.card-body{padding:14px 14px 8px 14px;display:flex;flex-direction:column;gap:6px}
+.card-title{font-weight:600;margin:0 0 2px 0}
+.row{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
+.price{color:#1f2937;font-weight:700;margin-top:6px}
+
+.card-actions{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-top:1px solid #eee}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:999px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;text-decoration:none;color:#111}
+.icon-btn:hover{background:#f3f4f6}
+.icon-wa{color:var(--wa);border-color:#cdeed7}
+.icon-call{color:var(--call);border-color:#cfe2ff}
+.icon-share{color:var(--primary)}
+
+.site-footer{border-top:1px solid #eee;padding:24px 0;margin-top:24px;color:var(--muted);text-align:center;background:#fff}
+
+.contact-bar{position:fixed;right:16px;bottom:16px;display:flex;gap:10px;z-index:60;transition:transform .25s ease, opacity .25s ease}
+.contact-bar.hide{transform:translateY(80px);opacity:0}
+.fab{width:52px;height:52px;border-radius:999px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);background:#fff;text-decoration:none}
+.fab-whatsapp{color:#fff;background:var(--wa)}
+.fab-call{color:#fff;background:var(--call)}
+.fab:hover{filter:brightness(0.95)}
+
+.badge{display:inline-flex;gap:6px;align-items:center;background:#f3f4f6;border-radius:999px;padding:4px 10px;font-size:12px;color:#374151}
