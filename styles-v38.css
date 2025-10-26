@@ -1,0 +1,12 @@
+body{font-family:Inter,sans-serif;background:#f7f7f8;margin:0;color:#111}
+.container{max-width:960px;margin:0 auto;padding:0 16px}
+.site-header{background:#fff;border-bottom:1px solid #eee;padding:12px 0}
+.branding h1{margin:0;font-size:22px}
+.avatar{width:56px;height:56px;border-radius:50%}
+.grid{display:grid;gap:16px;padding:20px 0}
+@media(min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{background:#fff;border:1px solid #eee;border-radius:8px;padding:12px;box-shadow:0 4px 8px rgba(0,0,0,.05)}
+.card h3{margin:0;font-size:16px}
+.card div{margin-top:4px;font-size:14px;color:#555}
+.site-footer{background:#fff;border-top:1px solid #eee;padding:12px 0;text-align:center;font-size:14px;color:#666}
