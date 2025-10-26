@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sodeng Hartanah</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Sodeng Hartanah</h1>
+    <p class="tagline">“Kalau ngam kita deal”</p>
+    <div class="profile">
+      <img src="assets/profile.png" alt="Profile" class="profile-pic"
+           onerror="this.onerror=null;this.src='assets/profile.jpg';">
+      <div>
+        <h2>Putera Muhammad Sholihin Bin Adul</h2>
+        <p>Property Consultant at One Dream Legacy East Coast</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h2>🔥 Hot Listings</h2>
+    <div class="filters">
+      <input type="text" id="search" placeholder="Search by title or location...">
+      <select id="typeFilter"><option>All Types</option></select>
+      <select id="locationFilter"><option>All Locations</option></select>
+      <input type="number" id="minBudget" placeholder="Min Budget (RM)">
+      <input type="number" id="maxBudget" placeholder="Max Budget (RM)">
+      <select id="sortFilter">
+        <option value="default">Sort: Default</option>
+        <option value="priceAsc">Sort: Price (Low → High)</option>
+        <option value="priceDesc">Sort: Price (High → Low)</option>
+      </select>
+      <button id="applyFilter">Apply</button>
+      <button id="resetFilter">Reset</button>
+    </div>
+    <div id="property-list" class="property-list"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 Sodeng Hartanah. All rights reserved. v4.0</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
