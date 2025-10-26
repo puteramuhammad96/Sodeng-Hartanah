@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sodeng Hartanah</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="branding">
+      <img src="assets/profile.jpg" class="profile-pic" alt="Profile">
+      <div>
+        <h1>Sodeng Hartanah</h1>
+        <p>Property Consultant at One Dream Legacy East Coast</p>
+        <small><em>"Kalau ngam kita deal"</em></small>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hot-carousel">
+      <h2>🔥 Hot Listings</h2>
+      <div id="hotCarousel" class="carousel"></div>
+    </section>
+
+    <section class="filters">
+      <input type="text" id="searchInput" placeholder="Search by title or location">
+      <select id="typeFilter">
+        <option value="">All Types</option>
+        <option value="Land">Land</option>
+        <option value="Subsale">Subsale</option>
+        <option value="Undercon">Undercon</option>
+      </select>
+      <input type="number" id="minPrice" placeholder="Min Price (RM)">
+      <input type="number" id="maxPrice" placeholder="Max Price (RM)">
+      <select id="sortFilter">
+        <option value="default">Sort by Default</option>
+        <option value="priceAsc">Price Low → High</option>
+        <option value="priceDesc">Price High → Low</option>
+      </select>
+      <button onclick="applyFilters()">Apply</button>
+      <button onclick="resetFilters()">Reset</button>
+    </section>
+
+    <section class="listings">
+      <h2>All Properties</h2>
+      <div id="propertyList" class="property-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Sodeng Hartanah</p>
+  </footer>
+
+  <a href="https://wa.me/601169429832" class="fab whatsapp">💬</a>
+  <a href="tel:+601169429832" class="fab call">📞</a>
+
+  <script src="script.js"></script>
+</body>
+</html>
