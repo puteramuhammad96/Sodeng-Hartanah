@@ -1,59 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sodeng Hartanah</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sodeng Hartanah</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <div class="profile">
-      <img src="assets/profile.jpg" alt="Profile" class="profile-pic" />
-      <div>
-        <h1>Sodeng Hartanah</h1>
-        <p class="tagline">"Kalau ngam kita deal"</p>
-        <p>Property Consultant at One Dream Legacy East Coast</p>
-      </div>
-    </div>
-  </header>
+<header class="site-header">
+  <img class="avatar" src="assets/profile.jpg" alt="Profile">
+  <div>
+    <h1>Sodeng Hartanah</h1>
+    <p class="tag">"Kalau ngam kita deal"</p>
+    <small>Property Consultant at One Dream Legacy East Coast</small>
+  </div>
+</header>
 
-  <main>
-    <section class="hot">
-      <h2>🔥 Hot Listings</h2>
-      <div id="hotListings" class="grid"></div>
-    </section>
+<main>
+  <section class="filters">
+    <input id="search" placeholder="Search by title or location">
+    <select id="type">
+      <option value="">All Types</option>
+      <option>Land</option><option>Subsale</option><option>Undercon</option>
+    </select>
+    <input id="min" type="number" placeholder="Min Price (RM)">
+    <input id="max" type="number" placeholder="Max Price (RM)">
+    <select id="sort">
+      <option value="">Sort: Default</option>
+      <option value="asc">Price: Low → High</option>
+      <option value="desc">Price: High → Low</option>
+    </select>
+    <button onclick="applyFilters()">Apply</button>
+    <button onclick="resetFilters()">Reset</button>
+  </section>
 
-    <section class="all">
-      <h2>All Properties</h2>
-      <div class="filters">
-        <input type="text" id="search" placeholder="Search by title or location" />
-        <select id="filterType">
-          <option value="">All Types</option>
-          <option value="subsale">Subsale</option>
-          <option value="undercon">Undercon</option>
-          <option value="land">Land</option>
-        </select>
-        <input type="number" id="minPrice" placeholder="Min Price (RM)" />
-        <input type="number" id="maxPrice" placeholder="Max Price (RM)" />
-        <select id="sortPrice">
-          <option value="">Sort by Default</option>
-          <option value="asc">Sort by Price: Low → High</option>
-          <option value="desc">Sort by Price: High → Low</option>
-        </select>
-        <button onclick="applyFilters()">Apply</button>
-        <button onclick="resetFilters()">Reset</button>
-      </div>
-      <div id="propertyList" class="grid"></div>
-    </section>
+  <section class="hot">
+    <h2>🔥 Hot Listings</h2>
+    <div id="hot" class="carousel"></div>
+  </section>
 
-    <section id="propertyDetail" class="detail hidden"></section>
-  </main>
+  <section>
+    <h2>All Properties</h2>
+    <div id="list" class="grid"></div>
+  </section>
+</main>
 
-  <footer>
-    <p>© 2025 Sodeng Hartanah. All rights reserved. v5.7</p>
-  </footer>
+<footer>© 2025 Sodeng Hartanah • v5.8</footer>
 
-  <script src="script.js"></script>
+<a class="fab wa" href="https://wa.me/601169429832?text=Hai%2C%20saya%20nak%20tahu%20tentang%20listing%20di%20Sodeng%20Hartanah.">💬</a>
+<a class="fab call" href="tel:+601169429832">📞</a>
+
+<script src="script.js"></script>
 </body>
 </html>
