@@ -1,5 +1,5 @@
 // Ganti URL bawah ni dengan Google Sheet CSV link awak
-const sheetUrl = "https://docs.google.com/spreadsheets/d/<<YOUR_SHEET_ID>>/gviz/tq?tqx=out:csv";
+const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShnLuLipWzmMjEWVuDS5hRqDnV57kMDrqsKsyfCJSIIvOH4xNleKM6PoXniSBvFnmfPF86jX1jydvh/pub?output=csv";
 
 async function loadProperties() {
   try {
