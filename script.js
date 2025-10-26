@@ -1,78 +1,14 @@
-/***** SODENG v5.3 HOTFIX – CSV robust, gambar & harga *****/
-
-// 1) CSV link (Publish to web)
-const sheetUrl =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vShnLuLipWzmMjEWVuDS5hRqDnV57kMDrqsKsyfCJSIIvOH4xNleKM6PoXniSBvFnmfPF86jX1jydvh/pub?output=csv";
+const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShnLuLipWzmMjEWVuDS5hRqDnV57kMDrqsKsyfCJSIIvOH4xNleKM6PoXniSBvFnmfPF86jX1jydvh/pub?output=csv";
 
 let properties = [];
+let slideIndex = 0;
+let slideInterval;
 
-/* ---------------- CSV PARSER (respect quotes) ----------------
-   - Google Sheets akan bungkus cell yang ada koma di dalam "quotes".
-   - Parser ni akan parse baris demi baris, dan "split" hanya koma yang DI LUAR quotes.
----------------------------------------------------------------- */
-function parseCSV(text) {
-  const rows = [];
-  let row = [];
-  let cell = "";
-  let insideQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    const next = text[i + 1];
-
-    if (c === '"') {
-      if (insideQuotes && next === '"') {
-        // escaped quote ""
-        cell += '"';
-        i++;
-      } else {
-        insideQuotes = !insideQuotes;
-      }
-    } else if (c === "," && !insideQuotes) {
-      row.push(cell);
-      cell = "";
-    } else if ((c === "\n" || c === "\r") && !insideQuotes) {
-      // end of row (support \r\n)
-      if (cell.length || row.length) {
-        row.push(cell);
-        rows.push(row);
-        row = [];
-        cell = "";
-      }
-      // skip \r in \r\n
-      if (c === "\r" && next === "\n") i++;
-    } else {
-      cell += c;
-    }
-  }
-  // last cell
-  if (cell.length || row.length) {
-    row.push(cell);
-    rows.push(row);
-  }
-  return rows;
-}
-
-/* --------- Tukar apa-apa link Google Drive jadi direct view ---------- */
-function formatDriveImage(url) {
-  if (!url) return "";
-  // Cari ID fail dalam pelbagai format (file/d/..., id=..., uc?id=...)
-  const idMatch = url.match(/[-\w]{25,}/);
-  if (idMatch) {
-    return `https://drive.google.com/uc?export=view&id=${idMatch[0]}`;
-  }
-  return url.trim();
-}
-
-/* ------------------------ Fetch & Build Data ------------------------- */
 async function fetchData() {
   const res = await fetch(sheetUrl);
   const text = await res.text();
-
-  const rows = parseCSV(text);
-  if (!rows.length) return;
-
-  const headers = rows[0].map((h) => h.trim().toLowerCase());
+  const rows = text.split("\n").map(r => r.split(","));
+  const headers = rows[0].map(h => h.trim().toLowerCase());
 
   const idx = {
     title: headers.indexOf("title"),
@@ -83,38 +19,23 @@ async function fetchData() {
     specs: headers.indexOf("specs"),
     details: headers.indexOf("details"),
     map: headers.indexOf("map"),
-    hot: headers.indexOf("hot"),
+    hot: headers.indexOf("hot")
   };
 
   properties = rows.slice(1).map((r, i) => {
-    // IMAGES: cell mungkin ada banyak link dipisahkan koma
-    let imageList = [];
-    if (idx.images >= 0 && r[idx.images]) {
-      imageList = r[idx.images]
-        .split(",")
-        .map((u) => u.trim())
-        .filter(Boolean)
-        .map(formatDriveImage);
-    }
-    const thumb = imageList[0] || "assets/no-image.png";
-
-    // PRICE: format RM#,###,###
-    const rawPrice = idx.price >= 0 ? (r[idx.price] || "").replace(/[^\d]/g, "") : "";
-    const priceNum = rawPrice ? parseInt(rawPrice, 10) : 0;
-
+    const imgUrl = r[idx.images] ? r[idx.images].split(",")[0].trim() : "";
     return {
       id: i,
-      title: idx.title >= 0 ? (r[idx.title] || "").trim() : "",
-      displayTitle:
-        idx.displayTitle >= 0 ? (r[idx.displayTitle] || "").trim() : "",
-      images: imageList,
-      thumb,
-      price: priceNum,
-      type: idx.type >= 0 ? (r[idx.type] || "").trim() : "",
-      specs: idx.specs >= 0 ? (r[idx.specs] || "").trim() : "",
-      details: idx.details >= 0 ? (r[idx.details] || "").trim() : "",
-      map: idx.map >= 0 ? (r[idx.map] || "").trim() : "",
-      hot: idx.hot >= 0 ? (String(r[idx.hot]).trim() === "1") : false,
+      title: r[idx.title],
+      displayTitle: r[idx.displayTitle],
+      images: r[idx.images],
+      thumb: imgUrl,
+      price: parseFloat(r[idx.price]) || 0,
+      type: r[idx.type],
+      specs: r[idx.specs],
+      details: r[idx.details],
+      map: r[idx.map],
+      hot: r[idx.hot] == "1"
     };
   });
 
@@ -123,22 +44,17 @@ async function fetchData() {
   renderDetail();
 }
 
-/* --------------------------- Rendering --------------------------- */
 function renderProperties(list) {
   const container = document.getElementById("propertyList");
   if (!container) return;
   container.innerHTML = "";
-
-  list.forEach((p) => {
-    const title = p.displayTitle || p.title || "Untitled";
-    const price = `RM${(p.price || 0).toLocaleString()}`;
-
+  list.forEach(p => {
     container.innerHTML += `
       <div class="card">
         <a href="details.html?id=${p.id}">
-          <img src="${p.thumb}" alt="${title}">
-          <h3>${title}</h3>
-          <p>${price}</p>
+          <img src="${p.thumb}" alt="${p.displayTitle}">
+          <h3>${p.displayTitle}</h3>
+          <p>RM${p.price.toLocaleString()}</p>
         </a>
       </div>
     `;
@@ -149,70 +65,89 @@ function renderHot(list) {
   const container = document.getElementById("hotCarousel");
   if (!container) return;
   container.innerHTML = "";
-
-  list.filter((p) => p.hot).forEach((p) => {
-    const title = p.displayTitle || p.title || "Untitled";
-    container.innerHTML += `
-      <a href="details.html?id=${p.id}">
-        <img src="${p.thumb}" alt="${title}">
-      </a>`;
+  list.filter(p => p.hot).forEach(p => {
+    container.innerHTML += `<a href="details.html?id=${p.id}"><img src="${p.thumb}" alt="${p.displayTitle}"></a>`;
   });
-
-  // autoplay scroll
-  setInterval(() => container.scrollBy({ left: 320, behavior: "smooth" }), 4000);
+  setInterval(() => { container.scrollBy({left: 320, behavior: 'smooth'}); }, 4000);
 }
 
 function renderDetail() {
   const container = document.getElementById("detailContainer");
   if (!container) return;
-
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
-  const p = properties.find((x) => String(x.id) === String(id));
+  const p = properties.find(x => x.id == id);
   if (!p) return;
 
-  const title = p.displayTitle || p.title || "Untitled";
-  const price = `RM${(p.price || 0).toLocaleString()}`;
+  const title = p.displayTitle || p.title;
   const waMessage = encodeURIComponent(`Hai, boleh saya tahu tentang property ${title}?`);
 
-  // galeri (side scroll) – guna semua images
-  const gallery = (p.images.length ? p.images : [p.thumb])
-    .map((url) => `<img src="${url}" style="width:100%;max-height:300px;object-fit:cover;border-radius:8px;margin-bottom:10px;">`)
-    .join("");
+  // slideshow for all images
+  let gallery = "";
+  if (p.images) {
+    const imageList = p.images.split(",").map(u => u.trim());
+    gallery = `
+      <div class="slideshow-container">
+        ${imageList.map((url, idx) => `
+          <div class="slide" style="display:${idx === 0 ? 'block' : 'none'}">
+            <img src="${url}" alt="${title}">
+          </div>
+        `).join("")}
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+      </div>
+    `;
+    slideIndex = 0;
+    clearInterval(slideInterval);
+    slideInterval = setInterval(() => { plusSlides(1); }, 4000);
+  }
 
   container.innerHTML = `
     <h2>${title}</h2>
     ${gallery}
-    <p><strong>Price:</strong> ${price}</p>
-    <p><strong>Type:</strong> ${p.type || "-"}</p>
-    <p><strong>Specs:</strong> ${p.specs || "-"}</p>
-    <p><strong>Details:</strong> ${p.details || "-"}</p>
-    ${p.map ? `<iframe src="${p.map}" width="100%" height="300" style="border:0;border-radius:8px;" allowfullscreen="" loading="lazy"></iframe>` : ""}
+    <p><strong>Price:</strong> RM${p.price.toLocaleString()}</p>
+    <p><strong>Type:</strong> ${p.type}</p>
+    <p><strong>Specs:</strong> ${p.specs}</p>
+    <p><strong>Details:</strong> ${p.details}</p>
+    ${p.map ? `<iframe src="${p.map}" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>` : ""}
 
     <div class="contact-options">
       <a href="https://wa.me/601169429832?text=${waMessage}" class="btn-wa">Chat WhatsApp</a>
       <a href="tel:+601169429832" class="btn-call">Call Now</a>
     </div>
   `;
+  showSlides(slideIndex);
 }
 
-/* -------------------------- Filters UI -------------------------- */
+function showSlides(n) {
+  const slides = document.querySelectorAll(".slide");
+  if (!slides.length) return;
+  if (n >= slides.length) slideIndex = 0;
+  if (n < 0) slideIndex = slides.length - 1;
+  slides.forEach(s => s.style.display = "none");
+  slides[slideIndex].style.display = "block";
+}
+
+function plusSlides(n) {
+  slideIndex += n;
+  showSlides(slideIndex);
+}
+
 function applyFilters() {
-  const search = (document.getElementById("searchInput").value || "").toLowerCase();
+  const search = document.getElementById("searchInput").value.toLowerCase();
   const type = document.getElementById("typeFilter").value;
   const min = parseFloat(document.getElementById("minPrice").value) || 0;
   const max = parseFloat(document.getElementById("maxPrice").value) || Infinity;
   const sort = document.getElementById("sortFilter").value;
 
-  let filtered = properties.filter((p) => {
-    const t = (p.displayTitle || p.title || "").toLowerCase();
-    return (!search || t.includes(search)) &&
-           (!type || p.type === type) &&
-           (p.price >= min && p.price <= max);
-  });
+  let filtered = properties.filter(p => 
+    (!search || (p.displayTitle && p.displayTitle.toLowerCase().includes(search))) &&
+    (!type || p.type === type) &&
+    (p.price >= min && p.price <= max)
+  );
 
-  if (sort === "priceAsc") filtered.sort((a, b) => a.price - b.price);
-  if (sort === "priceDesc") filtered.sort((a, b) => b.price - a.price);
+  if (sort === "priceAsc") filtered.sort((a,b) => a.price - b.price);
+  if (sort === "priceDesc") filtered.sort((a,b) => b.price - a.price);
 
   renderProperties(filtered);
 }
