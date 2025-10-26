@@ -40,8 +40,11 @@ async function fetchData() {
 
 function formatDriveImage(url) {
   if (!url) return "";
-  const match = url.match(/id=([a-zA-Z0-9_-]+)/);
-  return match ? `https://drive.google.com/uc?export=view&id=${match[1]}` : url;
+  let idMatch = url.match(/[-\w]{25,}/);
+  if (idMatch) {
+    return `https://drive.google.com/uc?export=view&id=${idMatch[0]}`;
+  }
+  return url;
 }
 
 function renderProperties(list) {
@@ -80,6 +83,9 @@ function renderDetail() {
   const id = params.get("id");
   const p = properties.find(x => x.id == id);
   if (!p) return;
+
+  const waMessage = encodeURIComponent(`Hai, boleh saya tahu tentang property ${p.displayTitle}?`);
+
   container.innerHTML = `
     <h2>${p.displayTitle}</h2>
     <img src="${formatDriveImage(p.images)}">
@@ -88,6 +94,11 @@ function renderDetail() {
     <p><strong>Specs:</strong> ${p.specs}</p>
     <p><strong>Details:</strong> ${p.details}</p>
     ${p.map ? `<iframe src="${p.map}" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>` : ""}
+
+    <div class="contact-options">
+      <a href="https://wa.me/601169429832?text=${waMessage}" class="btn-wa">Chat WhatsApp</a>
+      <a href="tel:+601169429832" class="btn-call">Call Now</a>
+    </div>
   `;
 }
 

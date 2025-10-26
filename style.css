@@ -99,6 +99,22 @@ body {
   border-radius: 8px;
 }
 
+.contact-options {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+.contact-options a {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border-radius: 6px;
+  color: #fff;
+  text-decoration: none;
+}
+.btn-wa { background: #25D366; }
+.btn-call { background: #007BFF; }
+
 .fab {
   position: fixed;
   bottom: 20px;
