@@ -1,109 +1,145 @@
+const sheetURL = "PASTE_YOUR_GOOGLE_SHEET_JSON_URL"; // <-- ganti dengan URL JSON sheet
 
-(function(){
-  const SHEET_ID = window.SHEET_ID;
-  const WA = window.WHATSAPP_NUMBER;
-  document.getElementById('year').textContent = new Date().getFullYear();
-  document.getElementById('waBtn').href = `https://wa.me/${WA}?text=${encodeURIComponent("Hi Putera, saya berminat dengan hartanah tuan.")}`;
+let properties = [];
 
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+async function fetchData() {
+  const res = await fetch(sheetURL);
+  const data = await res.json();
 
-  // Helpers
-  const priceNum = v => Number(String(v||"").replace(/[^0-9.]/g,""))||0;
-  const priceFmt = v => { const n = priceNum(v); return n ? "RM" + n.toLocaleString("en-MY",{minimumFractionDigits:2}) : ""; };
+  properties = data.feed.entry.map(row => {
+    const obj = {};
+    row.gsx$title && (obj.title = row.gsx$title.$t);
+    obj.displayTitle = row.gsx$displaytitle ? row.gsx$displaytitle.$t : obj.title;
+    obj.images = row.gsx$images ? row.gsx$images.$t.split(",").map(x => x.trim()) : [];
+    obj.price = parseFloat(row.gsx$price?.$t || 0);
+    obj.type = row.gsx$type ? row.gsx$type.$t : "";
+    obj.location = row.gsx$location ? row.gsx$location.$t : "";
+    obj.hot = row.gsx$hot ? row.gsx$hot.$t : "";
 
-  function fixImageUrl(u){
-    if(!u) return "";
-    u = u.trim();
-    if(u.includes("drive.google.com")){
-      const m = u.match(/[-\w]{25,}/);
-      if(m) return `https://drive.google.com/uc?export=view&id=${m[0]}`;
+    return obj;
+  });
+
+  renderListings(properties);
+  renderCarousel(properties.filter(p => p.hot === "1"));
+}
+
+function formatPrice(num) {
+  return "RM" + num.toLocaleString("en-MY", {minimumFractionDigits: 2});
+}
+
+function renderListings(list) {
+  const container = document.getElementById("listings");
+  container.innerHTML = "";
+  list.forEach((p, i) => {
+    const img = p.images.length ? p.images[0] : "https://via.placeholder.com/300x200?text=No+Image";
+    const card = document.createElement("div");
+    card.className = "card";
+    card.onclick = () => openModal(p);
+    card.innerHTML = `
+      <img src="${img}" alt="${p.displayTitle}" />
+      <div class="card-content">
+        <h3 class="card-title">${p.displayTitle}</h3>
+        <p>${p.location || ""}</p>
+        <p class="card-price">${formatPrice(p.price)}</p>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderCarousel(list) {
+  const container = document.getElementById("carousel");
+  container.innerHTML = "";
+  list.forEach(p => {
+    const img = p.images.length ? p.images[0] : "https://via.placeholder.com/300x200?text=No+Image";
+    const card = document.createElement("div");
+    card.className = "carousel-card";
+    card.innerHTML = `
+      <img src="${img}" alt="${p.displayTitle}" />
+      <div style="padding:10px"><b>${p.displayTitle}</b><br>${formatPrice(p.price)}</div>
+    `;
+    container.appendChild(card);
+  });
+
+  // autoplay
+  setInterval(() => {
+    container.scrollBy({left: 260, behavior: "smooth"});
+    if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
+      container.scrollLeft = 0;
     }
-    return u;
-  }
+  }, 3000);
+}
 
-  function parseGViz(txt){
-    const start = txt.indexOf("(")+1, end = txt.lastIndexOf(")");
-    return JSON.parse(txt.slice(start,end));
-  }
-  function normalize(obj){
-    const cols = obj.table.cols.map(c => (c.label||"").toLowerCase().trim());
-    return (obj.table.rows||[]).map(r => {
-      const o = {};
-      (r.c||[]).forEach((cell,i)=>{ o[cols[i]||`col${i}`] = cell ? cell.v : ""; });
-      return o;
+// Modal
+function openModal(property) {
+  const modal = document.getElementById("modal");
+  modal.style.display = "block";
+
+  const modalImage = document.getElementById("modalImage");
+  const modalThumbnails = document.getElementById("modalThumbnails");
+  const modalDetails = document.getElementById("modalDetails");
+
+  let currentIndex = 0;
+  function showImage(index) {
+    modalImage.src = property.images[index];
+    [...modalThumbnails.children].forEach((thumb, i) => {
+      thumb.classList.toggle("active", i === index);
     });
   }
 
-  function unique(arr){ return Array.from(new Set(arr.filter(Boolean))).sort(); }
-
-  function makeCard(item){
-    const title = item.displaytitle || item['display_title'] || item.title || "Untitled";
-    // support image or images column, use first image for card
-    const rawImg = (String(item.image||item.images||"").split(",")[0]||"").trim();
-    const img = fixImageUrl(rawImg);
-
-    return `<article class="card">
-      ${img ? `<img src="${img}" alt="${title}">` : ""}
-      <div class="body">
-        <h3 class="title">${title}</h3>
-        <div class="row">📍 ${item.location||""}</div>
-        <div class="row">${item.type||""}</div>
-        <div class="price">${priceFmt(item.price)}</div>
-      </div>
-    </article>`;
-  }
-
-  // Render + Filters
-  const grid = document.getElementById("grid");
-  let ALL = [];
-
-  function render(list){
-    grid.innerHTML = list.map(makeCard).join("");
-  }
-
-  function applyFilters(){
-    const q = document.getElementById('q').value.toLowerCase().trim();
-    const t = document.getElementById('type').value;
-    const loc = document.getElementById('location').value;
-    const minp = Number(document.getElementById('minp').value||0);
-    const maxp = Number(document.getElementById('maxp').value||0);
-    const sort = document.getElementById('sort').value;
-
-    let list = ALL.slice();
-    if(q) list = list.filter(x => (x.displaytitle||x.title||"").toLowerCase().includes(q) || (x.location||"").toLowerCase().includes(q));
-    if(t) list = list.filter(x => (x.type||"").toLowerCase() === t.toLowerCase());
-    if(loc) list = list.filter(x => (x.location||"") === loc);
-    if(minp) list = list.filter(x => priceNum(x.price) >= minp);
-    if(maxp) list = list.filter(x => priceNum(x.price) <= maxp);
-    if(sort === "plh") list.sort((a,b)=> priceNum(a.price)-priceNum(b.price));
-    if(sort === "phl") list.sort((a,b)=> priceNum(b.price)-priceNum(a.price));
-
-    render(list);
-  }
-
-  document.getElementById('apply').addEventListener('click', applyFilters);
-  document.getElementById('reset').addEventListener('click', ()=>{
-    ['q','type','location','minp','maxp','sort'].forEach(id => document.getElementById(id).value = "");
-    render(ALL);
+  modalThumbnails.innerHTML = "";
+  property.images.forEach((img, i) => {
+    const thumb = document.createElement("img");
+    thumb.src = img;
+    thumb.onclick = () => { currentIndex = i; showImage(i); };
+    modalThumbnails.appendChild(thumb);
   });
 
-  async function load(){
-    try{
-      const res = await fetch(url);
-      const txt = await res.text();
-      const data = normalize(parseGViz(txt));
+  showImage(currentIndex);
 
-      // populate filters
-      const locSel = document.getElementById('location');
-      locSel.innerHTML = '<option value="">All Locations</option>' + unique(data.map(x=>x.location)).map(x=>`<option>${x}</option>`).join('');
+  modalDetails.innerHTML = `
+    <h2>${property.displayTitle}</h2>
+    <p>${property.location || ""}</p>
+    <p>${formatPrice(property.price)}</p>
+    <p>Type: ${property.type || ""}</p>
+  `;
+}
 
-      ALL = data;
-      render(ALL);
-    }catch(e){
-      console.error(e);
-      grid.innerHTML = "<p style='color:#c00'>Error loading data from Google Sheet.</p>";
-    }
-  }
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
 
-  load();
-})();
+function applyFilters() {
+  let list = [...properties];
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const type = document.getElementById("typeFilter").value;
+  const location = document.getElementById("locationFilter").value;
+  const min = parseFloat(document.getElementById("minBudget").value || 0);
+  const max = parseFloat(document.getElementById("maxBudget").value || Infinity);
+  const sort = document.getElementById("sortFilter").value;
+
+  list = list.filter(p =>
+    (!search || p.displayTitle.toLowerCase().includes(search)) &&
+    (!type || p.type === type) &&
+    (!location || p.location === location) &&
+    (p.price >= min && p.price <= max)
+  );
+
+  if (sort === "asc") list.sort((a,b) => a.price - b.price);
+  if (sort === "desc") list.sort((a,b) => b.price - a.price);
+
+  renderListings(list);
+}
+
+function resetFilters() {
+  document.getElementById("searchInput").value = "";
+  document.getElementById("typeFilter").value = "";
+  document.getElementById("locationFilter").value = "";
+  document.getElementById("minBudget").value = "";
+  document.getElementById("maxBudget").value = "";
+  document.getElementById("sortFilter").value = "";
+  renderListings(properties);
+}
+
+fetchData();
+
