@@ -1,9 +1,12 @@
-// ====== CONFIG: link CSV (Published to web) ======
+// ========= CONFIG =========
+// CSV Google Sheet (Publish to web -> CSV)
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQhh1miy0ybTomX1hrTj44jYunYtzivOvNAFv_IlYcwOazm7BHa6-aSVkCZg0q_rd5aC9K-dTOa88Rn/pub?gid=0&single=true&output=csv";
 
-let allProps = [];
+// Google Apps Script Web App endpoint (we'll create it below)
+// Example: const folderAPI = "https://script.google.com/macros/s/AKfycb.../exec";
+const folderAPI = ""; // <= paste your deployed Web App URL here
 
-// Robust CSV parser (handles quoted fields & commas inside)
+// ========= HELPERS =========
 function parseCSV(text) {
   const rows = [];
   let row = [], cell = "", inQuotes = false;
@@ -24,29 +27,30 @@ function parseCSV(text) {
   return rows;
 }
 
-function normalizeDrive(url) {
-  if (!url) return "";
-  const idMatch = url.match(/[-\w]{25,}/);
-  if (idMatch) {
-    const id = idMatch[0];
-    return {
-      view: `https://drive.google.com/uc?export=view&id=${id}`,
-      thumb: `https://drive.google.com/thumbnail?id=${id}&sz=w1600`
-    };
-  }
-  return { view: url, thumb: url };
-}
-
-function splitImages(val) {
-  if (!val) return [];
-  // allow separators: comma, semicolon, pipe, newline
-  return val.split(/[,;|\n]/).map(s => s.trim()).filter(Boolean);
-}
-
 function money(n) {
   const num = parseFloat(String(n).replace(/[^\d.]/g, "")) || 0;
   return "RM" + num.toLocaleString("ms-MY", { minimumFractionDigits: 0 });
 }
+
+function splitMulti(val) {
+  if (!val) return [];
+  return val.split(/[,;|\n]/).map(s=>s.trim()).filter(Boolean);
+}
+
+function getFolderId(v) {
+  if (!v) return "";
+  // Accept full link or pure ID
+  const m = v.match(/[-\w]{25,}/);
+  return m ? m[0] : "";
+}
+
+function driveViewFromAny(url) {
+  const id = getFolderId(url);
+  return id ? `https://drive.google.com/uc?export=view&id=${id}` : url;
+}
+
+// ========= DATA =========
+let allProps = [];
 
 async function load() {
   const res = await fetch(sheetUrl);
@@ -56,60 +60,86 @@ async function load() {
   const idx = (name) => headers.indexOf(name);
 
   allProps = rows.slice(1).filter(r => r[idx('displaytitle')]).map((r,i) => {
-    const imagesRaw = r[idx('images')] || "";
-    const imgs = splitImages(imagesRaw).map(u => normalizeDrive(u));
+    const imagesVal = r[idx('images')] || "";
+    let folderId = "";
+    let inlineImages = [];
+
+    // If it's a folder link/id (contains '/folders/' or looks like an ID), treat as folder
+    if (/folders\//.test(imagesVal) || (imagesVal.trim().split(/[,;|\n]/).length === 1 && getFolderId(imagesVal))) {
+      folderId = getFolderId(imagesVal);
+    } else {
+      inlineImages = splitMulti(imagesVal).map(u => driveViewFromAny(u));
+    }
+
     return {
       id: i,
       title: r[idx('title')] || "",
       displayTitle: r[idx('displaytitle')] || "",
       price: r[idx('price')] || "",
-      type: (r[idx('type')] || "").trim(),
+      type: (r[idx('type')] || "").toLowerCase(),
       specs: r[idx('specs')] || "",
       details: r[idx('details')] || "",
       map: r[idx('map')] || "",
       hot: (r[idx('hot')] || "").toLowerCase() === "yes",
-      images: imgs,
-      thumb: imgs[0]?.view || ""
+      folderId,
+      images: inlineImages
     };
   });
 
-  renderList(allProps);
-  renderHot(allProps.filter(p => p.hot));
-  renderDetailFromQuery();
+  renderAll();
+  renderHot();
+  // If we have folder API, try to enrich thumbnails for listings that use folderId
+  if (folderAPI) {
+    fillThumbnailsFromFolders();
+  }
 }
 
-function renderList(list) {
+function renderAll(list = allProps) {
   const el = document.getElementById('list');
-  if (!el) return;
   el.innerHTML = "";
   list.forEach(p => {
-    const card = document.createElement('a');
-    card.className = 'card';
-    card.href = `details.html?id=${p.id}`;
-    card.innerHTML = `
-      <img src="${p.thumb}" alt="${p.displayTitle}"
-           onerror="this.onerror=null;this.src='${p.images[0]?.thumb || 'assets/placeholder.jpg'}'">
+    const thumb = p.images[0] || "assets/placeholder.jpg";
+    const a = document.createElement('a');
+    a.className = "card";
+    a.href = `details.html?id=${p.id}`;
+    a.innerHTML = `
+      <img src="${thumb}" alt="${p.displayTitle}">
       <div class="meta">
-        <h3>${p.displayTitle} ${p.type ? `<span class='badge'>${p.type}</span>`:''}</h3>
+        <h3>${p.displayTitle} ${p.type?`<span class='badge'>${p.type}</span>`:""}</h3>
         <div class="price">${money(p.price)}</div>
       </div>`;
-    el.appendChild(card);
-  });
-}
-
-function renderHot(list) {
-  const el = document.getElementById('hot');
-  if (!el) return;
-  el.innerHTML = "";
-  list.forEach(p => {
-    const a = document.createElement('a');
-    a.href = `details.html?id=${p.id}`;
-    a.innerHTML = `<img src="${p.thumb}" alt="${p.displayTitle}"
-                     onerror="this.onerror=null;this.src='${p.images[0]?.thumb || 'assets/placeholder.jpg'}'">`;
     el.appendChild(a);
   });
 }
 
+function renderHot() {
+  const hot = document.getElementById('hot');
+  if (!hot) return;
+  hot.innerHTML = "";
+  allProps.filter(p=>p.hot).forEach(p => {
+    const a = document.createElement('a');
+    a.href = `details.html?id=${p.id}`;
+    a.innerHTML = `<img src="${p.images[0]||'assets/placeholder.jpg'}" alt="${p.displayTitle}">`;
+    hot.appendChild(a);
+  });
+}
+
+async function fillThumbnailsFromFolders() {
+  const toFetch = allProps.filter(p => p.folderId && p.images.length === 0);
+  for (const p of toFetch) {
+    try {
+      const resp = await fetch(`${folderAPI}?id=${p.folderId}`);
+      const data = await resp.json(); // {files: [{view,thumb}, ...]}
+      if (data.files && data.files.length) {
+        p.images = data.files.map(f => f.view);
+      }
+    } catch (e) { /* ignore */ }
+  }
+  renderAll(); // re-render with new thumbs
+  renderHot();
+}
+
+// ========= Filters =========
 function applyFilters() {
   const q = document.getElementById('search').value.toLowerCase();
   const t = document.getElementById('type').value.toLowerCase();
@@ -119,30 +149,51 @@ function applyFilters() {
 
   let list = allProps.filter(p =>
     (!q || p.displayTitle.toLowerCase().includes(q)) &&
-    (!t || p.type.toLowerCase() === t) &&
+    (!t || p.type === t) &&
     ((parseFloat(p.price)||0) >= min && (parseFloat(p.price)||0) <= max)
   );
-
   if (sort === 'asc') list.sort((a,b)=>(a.price||0)-(b.price||0));
   if (sort === 'desc') list.sort((a,b)=>(b.price||0)-(a.price||0));
-
-  renderList(list);
+  renderAll(list);
 }
 
 function resetFilters() {
-  ['search','type','min','max','sort'].forEach(id => document.getElementById(id).value = id==='sort'?'': '');
-  renderList(allProps);
+  ['search','type','min','max','sort'].forEach(id => document.getElementById(id).value = id==='sort'?'':'');
+  renderAll();
 }
 
-function renderDetailFromQuery() {
+// ========= Detail =========
+async function loadDetailImages(p) {
+  if (p.images.length) return p.images;
+  if (p.folderId && folderAPI) {
+    try {
+      const resp = await fetch(`${folderAPI}?id=${p.folderId}`);
+      const data = await resp.json();
+      const files = (data.files||[]).map(f => f.view);
+      if (files.length) p.images = files;
+      return p.images;
+    } catch(e) { return []; }
+  }
+  return [];
+}
+
+function getByQuery() {
+  const id = new URLSearchParams(location.search).get('id');
+  return allProps.find(x => String(x.id) === String(id));
+}
+
+async function renderDetail() {
   const container = document.getElementById('detail');
   if (!container) return;
-  const id = new URLSearchParams(location.search).get('id');
-  const p = allProps.find(x => String(x.id) === String(id));
+  if (!allProps.length) await load();
+  const p = getByQuery();
   if (!p) { container.innerHTML = "<p class='box'>Property not found.</p>"; return; }
 
-  // Slideshow
-  const slides = p.images.map((u,i)=>`<img class="${i===0?'active':''}" src="${u.view}" onerror="this.onerror=null;this.src='${u.thumb}'">`).join("");
+  document.querySelector('.detail-title').textContent = p.displayTitle;
+
+  const imgs = await loadDetailImages(p);
+  const slides = imgs.map((u,i)=>`<img class="${i===0?'active':''}" src="${u}">`).join("") || `<img class="active" src="assets/placeholder.jpg">`;
+
   container.innerHTML = `
     <div class="row">
       <div class="box">
@@ -168,11 +219,10 @@ function renderDetailFromQuery() {
     </div>
     ${p.map ? `<div class="box" style="margin-top:14px"><iframe src="${p.map}" width="100%" height="360" style="border:0" loading="lazy"></iframe></div>`:""}
   `;
-
-  startAutoSlide();
+  initSlide();
 }
 
-function startAutoSlide(){
+function initSlide(){
   const imgs = Array.from(document.querySelectorAll('#slides img'));
   if (!imgs.length) return;
   let i = 0;
@@ -185,4 +235,9 @@ function startAutoSlide(){
   setInterval(()=>nextSlide(), 4000);
 }
 
-window.addEventListener('DOMContentLoaded', load);
+// ========= BOOT =========
+if (location.pathname.endsWith('details.html')) {
+  window.addEventListener('DOMContentLoaded', renderDetail);
+} else {
+  window.addEventListener('DOMContentLoaded', load);
+}

@@ -1,12 +1,12 @@
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;color:#111;background:#f7f7f9}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;color:#111;background:#f6f7fb}
 .site-header{display:flex;gap:14px;align-items:center;padding:14px;border-bottom:1px solid #e7e7ee;background:#fff}
 .site-header .avatar{width:64px;height:64px;border-radius:50%;object-fit:cover}
 .site-header .tag{margin:2px 0 4px;color:#666;font-style:italic}
-.back{margin-right:10px;text-decoration:none;color:#0066ff}
+.back{margin-left:12px;text-decoration:none;color:#0066ff}
 .filters{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#fff;border-bottom:1px solid #eee}
 .filters input,.filters select,.filters button{padding:8px 10px;border:1px solid #ddd;border-radius:8px;background:#fff}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:14px}
-.card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;transition:.2s;cursor:pointer}
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;transition:.2s;cursor:pointer;display:block;color:inherit;text-decoration:none}
 .card:hover{transform:translateY(-3px)}
 .card img{width:100%;height:170px;object-fit:cover;background:#eee}
 .meta{padding:10px}
