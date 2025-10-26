@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sodeng Hartanah v5.6 Fixed</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Sodeng Hartanah</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
@@ -12,21 +12,46 @@
       <img src="assets/profile.jpg" alt="Profile" class="profile-pic" />
       <div>
         <h1>Sodeng Hartanah</h1>
+        <p class="tagline">"Kalau ngam kita deal"</p>
         <p>Property Consultant at One Dream Legacy East Coast</p>
-        <em>"Kalau ngam kita deal"</em>
       </div>
     </div>
   </header>
 
   <main>
-    <section class="hot-listings">
+    <section class="hot">
       <h2>🔥 Hot Listings</h2>
-      <div id="listings" class="listings"></div>
+      <div id="hotListings" class="grid"></div>
     </section>
+
+    <section class="all">
+      <h2>All Properties</h2>
+      <div class="filters">
+        <input type="text" id="search" placeholder="Search by title or location" />
+        <select id="filterType">
+          <option value="">All Types</option>
+          <option value="subsale">Subsale</option>
+          <option value="undercon">Undercon</option>
+          <option value="land">Land</option>
+        </select>
+        <input type="number" id="minPrice" placeholder="Min Price (RM)" />
+        <input type="number" id="maxPrice" placeholder="Max Price (RM)" />
+        <select id="sortPrice">
+          <option value="">Sort by Default</option>
+          <option value="asc">Sort by Price: Low → High</option>
+          <option value="desc">Sort by Price: High → Low</option>
+        </select>
+        <button onclick="applyFilters()">Apply</button>
+        <button onclick="resetFilters()">Reset</button>
+      </div>
+      <div id="propertyList" class="grid"></div>
+    </section>
+
+    <section id="propertyDetail" class="detail hidden"></section>
   </main>
 
   <footer>
-    <p>© 2025 Sodeng Hartanah. All rights reserved. v5.6 Fixed</p>
+    <p>© 2025 Sodeng Hartanah. All rights reserved. v5.7</p>
   </footer>
 
   <script src="script.js"></script>
