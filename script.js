@@ -1,5 +1,6 @@
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShnLuLipWzmMjEWVuDS5hRqDnV57kMDrqsKsyfCJSIIvOH4xNleKM6PoXniSBvFnmfPF86jX1jydvh/pub?output=csv";
 
+async function loadProperties() {
   const res = await fetch(sheetUrl);
   const text = await res.text();
   const rows = text.split("\n").map(r => r.split(","));
@@ -18,10 +19,13 @@ const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShnLuLipWzmMj
   rows.slice(1).forEach(r => {
     if (!r[idx.displayTitle]) return;
     const title = r[idx.displayTitle];
-    let price = parseInt(r[idx.price]) || 0;
-    let priceFormatted = price ? "RM" + price.toLocaleString() : "RM0";
 
-    // Handle images
+    // Format harga
+    let priceValue = r[idx.price] ? r[idx.price].replace(/[^\d]/g, "") : "0";
+    let price = parseInt(priceValue) || 0;
+    let priceFormatted = price ? "RM" + price.toLocaleString("en-MY") : "N/A";
+
+    // Format gambar
     let imgUrl = "assets/no-image.png";
     if (r[idx.images]) {
       let rawLink = r[idx.images].split(",")[0].trim();
@@ -42,18 +46,6 @@ const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShnLuLipWzmMj
     `;
     listings.appendChild(card);
   });
-}
-
-function applyFilters() {
-  loadProperties(); // filter logic can be expanded later
-}
-function resetFilters() {
-  document.getElementById("search").value = "";
-  document.getElementById("typeFilter").value = "";
-  document.getElementById("minPrice").value = "";
-  document.getElementById("maxPrice").value = "";
-  document.getElementById("sortFilter").value = "default";
-  loadProperties();
 }
 
 loadProperties();
