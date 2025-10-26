@@ -4,7 +4,7 @@ const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQhh1miy0ybTom
 
 // Google Apps Script Web App endpoint (we'll create it below)
 // Example: const folderAPI = "https://script.google.com/macros/s/AKfycb.../exec";
-const folderAPI = ""; // <= paste your deployed Web App URL here
+const folderAPI = "https://script.google.com/macros/s/AKfycbzQwhwMqrGQb_o84McQGqaJ8AbdUgxLgTdMJeKrIfnbTFdLw3K7p9SuDUAqh0nhahoiOA/exec"; // <= paste your deployed Web App URL here
 
 // ========= HELPERS =========
 function parseCSV(text) {
