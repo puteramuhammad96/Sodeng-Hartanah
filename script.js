@@ -1,4 +1,4 @@
-const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vShnLuLipWzmMjEWVuDS5hRqDnV57kMDrqsKsyfCJSIIvOH4xNleKM6PoXniSBvFnmfPF86jX1jydvh/pub?output=csv";
+const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQhh1miy0ybTomX1hrTj44jYunYtzivOvNAFv_IlYcwOazm7BHa6-aSVkCZg0q_rd5aC9K-dTOa88Rn/pub?gid=0&single=true&output=csv";
 
 let properties = [];
 
