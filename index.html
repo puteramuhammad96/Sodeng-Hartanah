@@ -1,57 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sodeng Hartanah</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sodeng Hartanah</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
-<header class="site-header">
-  <img class="avatar" src="assets/profile.jpg" alt="Profile">
-  <div>
-    <h1>Sodeng Hartanah</h1>
-    <p class="tag">"Kalau ngam kita deal"</p>
-    <small>Property Consultant at One Dream Legacy East Coast</small>
-  </div>
-</header>
+  <header>
+    <div class="profile">
+      <img src="profile.jpg" alt="Profile" class="profile-pic" />
+      <div>
+        <h1>Sodeng Hartanah</h1>
+        <p><em>"Kalau ngam kita deal"</em></p>
+        <p>Property Consultant at One Dream Legacy East Coast</p>
+        <div class="social-links">
+          <a href="https://www.tiktok.com/@sodenghartanah" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="https://www.instagram.com/putera.adul?igsh=MWRiYmVtdW8waWFqZQ%3D%3D&utm_source=qr" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<section class="filters">
-  <input id="search" placeholder="Cari tajuk/lokasi">
-  <select id="type">
-    <option value="">All Types</option>
-    <option value="subsale">Subsale</option>
-    <option value="undercon">Undercon</option>
-    <option value="land">Land</option>
-  </select>
-  <input id="min" type="number" placeholder="Min Price (RM)">
-  <input id="max" type="number" placeholder="Max Price (RM)">
-  <select id="sort">
-    <option value="">Sort: Default</option>
-    <option value="asc">Price: Low → High</option>
-    <option value="desc">Price: High → Low</option>
-  </select>
-  <button onclick="applyFilters()">Apply</button>
-  <button onclick="resetFilters()">Reset</button>
-</section>
+  <main>
+    <section>
+      <h2>🔥 Hot Listings</h2>
+      <div class="filters">
+        <input type="text" id="search" placeholder="Search by title or location">
+        <select id="typeFilter">
+          <option value="">All Types</option>
+          <option value="subsale">Subsale</option>
+          <option value="undercon">Undercon</option>
+          <option value="land">Land</option>
+        </select>
+        <input type="number" id="minPrice" placeholder="Min Price (RM)" />
+        <input type="number" id="maxPrice" placeholder="Max Price (RM)" />
+        <select id="sortFilter">
+          <option value="default">Sort: Default</option>
+          <option value="priceLow">Price: Low to High</option>
+          <option value="priceHigh">Price: High to Low</option>
+        </select>
+        <button onclick="applyFilters()">Apply</button>
+        <button onclick="resetFilters()">Reset</button>
+      </div>
 
-<main>
-  <section class="hot">
-    <h2>🔥 Hot Listings</h2>
-    <div id="hot" class="carousel"></div>
-  </section>
+      <div id="properties" class="grid"></div>
+    </section>
+  </main>
 
-  <section>
-    <h2>All Properties</h2>
-    <div id="list" class="grid"></div>
-  </section>
-</main>
+  <footer>
+    <p>© 2025 Sodeng Hartanah • v6.1</p>
+  </footer>
 
-<footer>© 2025 Sodeng Hartanah • v6.0</footer>
-
-<a class="fab wa" href="https://wa.me/601169429832?text=Hai%2C%20saya%20nak%20tahu%20tentang%20listing%20di%20Sodeng%20Hartanah." aria-label="WhatsApp">💬</a>
-<a class="fab call" href="tel:+601169429832" aria-label="Call">📞</a>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
