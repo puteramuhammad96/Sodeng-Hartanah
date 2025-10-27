@@ -1,57 +1,52 @@
-// ========= CONFIG =========
-// CSV Google Sheet (Publish to web -> CSV)
+// ====== CONFIG: your Google Sheet CSV (Publish to web) ======
+// Replace this with your own CSV link when ready:
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQhh1miy0ybTomX1hrTj44jYunYtzivOvNAFv_IlYcwOazm7BHa6-aSVkCZg0q_rd5aC9K-dTOa88Rn/pub?gid=0&single=true&output=csv";
 
-// Google Apps Script Web App endpoint (we'll create it below)
-// Example: const folderAPI = "https://script.google.com/macros/s/AKfycb.../exec";
-const folderAPI = "https://script.google.com/macros/s/AKfycbzQwhwMqrGQb_o84McQGqaJ8AbdUgxLgTdMJeKrIfnbTFdLw3K7p9SuDUAqh0nhahoiOA/exec"; // <= paste your deployed Web App URL here
+let allProps = [];
 
-// ========= HELPERS =========
+// Robust CSV parser (supports quoted fields & commas inside)
 function parseCSV(text) {
   const rows = [];
   let row = [], cell = "", inQuotes = false;
   for (let i = 0; i < text.length; i++) {
     const c = text[i], n = text[i+1];
-    if (c === '"' ) {
-      if (inQuotes && n === '"') { cell += '"'; i++; }
-      else { inQuotes = !inQuotes; }
-    } else if (c === ',' && !inQuotes) {
-      row.push(cell); cell = "";
-    } else if ((c === '\n' || c === '\r') && !inQuotes) {
-      if (cell !== "" || row.length) { row.push(cell); rows.push(row); row = []; cell = ""; }
-    } else {
-      cell += c;
-    }
+    if (c === '"') { if (inQuotes && n === '"') { cell += '"'; i++; } else { inQuotes = !inQuotes; } }
+    else if (c === ',' && !inQuotes) { row.push(cell); cell = ""; }
+    else if ((c === '\n' || c === '\r') && !inQuotes) { if (cell !== "" || row.length) { row.push(cell); rows.push(row); row = []; cell = ""; } }
+    else { cell += c; }
   }
   if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
   return rows;
 }
 
+// Convert price to nice string
 function money(n) {
   const num = parseFloat(String(n).replace(/[^\d.]/g, "")) || 0;
   return "RM" + num.toLocaleString("ms-MY", { minimumFractionDigits: 0 });
 }
 
-function splitMulti(val) {
+// Split multiple images in a cell
+function splitImages(val) {
   if (!val) return [];
-  return val.split(/[,;|\n]/).map(s=>s.trim()).filter(Boolean);
+  return val.split(/[,;|\n]/).map(s => s.trim()).filter(Boolean);
 }
 
-function getFolderId(v) {
-  if (!v) return "";
-  // Accept full link or pure ID
-  const m = v.match(/[-\w]{25,}/);
-  return m ? m[0] : "";
+// Normalize Google Drive links to uc?export=view&id=FILE_ID
+function normalizeImageUrl(url) {
+  if (!url) return url;
+  // /file/d/<id>/view
+  let m = url.match(/\/file\/d\/([-\w]{10,})/);
+  if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  // id=<id>
+  m = url.match(/[?&]id=([-\w]{10,})/);
+  if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  // looks like raw id only
+  m = url.match(/^([-\w]{10,})$/);
+  if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+  return url;
 }
 
-function driveViewFromAny(url) {
-  const id = getFolderId(url);
-  return id ? `https://drive.google.com/uc?export=view&id=${id}` : url;
-}
-
-// ========= DATA =========
-let allProps = [];
-
+// ========== LOAD SHEET ==========
 async function load() {
   const res = await fetch(sheetUrl);
   const text = await res.text();
@@ -60,17 +55,7 @@ async function load() {
   const idx = (name) => headers.indexOf(name);
 
   allProps = rows.slice(1).filter(r => r[idx('displaytitle')]).map((r,i) => {
-    const imagesVal = r[idx('images')] || "";
-    let folderId = "";
-    let inlineImages = [];
-
-    // If it's a folder link/id (contains '/folders/' or looks like an ID), treat as folder
-    if (/folders\//.test(imagesVal) || (imagesVal.trim().split(/[,;|\n]/).length === 1 && getFolderId(imagesVal))) {
-      folderId = getFolderId(imagesVal);
-    } else {
-      inlineImages = splitMulti(imagesVal).map(u => driveViewFromAny(u));
-    }
-
+    const imgs = splitImages(r[idx('images')] || "").map(normalizeImageUrl);
     return {
       id: i,
       title: r[idx('title')] || "",
@@ -81,17 +66,12 @@ async function load() {
       details: r[idx('details')] || "",
       map: r[idx('map')] || "",
       hot: (r[idx('hot')] || "").toLowerCase() === "yes",
-      folderId,
-      images: inlineImages
+      images: imgs
     };
   });
 
   renderAll();
   renderHot();
-  // If we have folder API, try to enrich thumbnails for listings that use folderId
-  if (folderAPI) {
-    fillThumbnailsFromFolders();
-  }
 }
 
 function renderAll(list = allProps) {
@@ -103,7 +83,7 @@ function renderAll(list = allProps) {
     a.className = "card";
     a.href = `details.html?id=${p.id}`;
     a.innerHTML = `
-      <img src="${thumb}" alt="${p.displayTitle}">
+      <img src="${thumb}" alt="${p.displayTitle}" onerror="this.src='assets/placeholder.jpg'">
       <div class="meta">
         <h3>${p.displayTitle} ${p.type?`<span class='badge'>${p.type}</span>`:""}</h3>
         <div class="price">${money(p.price)}</div>
@@ -119,27 +99,12 @@ function renderHot() {
   allProps.filter(p=>p.hot).forEach(p => {
     const a = document.createElement('a');
     a.href = `details.html?id=${p.id}`;
-    a.innerHTML = `<img src="${p.images[0]||'assets/placeholder.jpg'}" alt="${p.displayTitle}">`;
+    a.innerHTML = `<img src="${p.images[0]||'assets/placeholder.jpg'}" alt="${p.displayTitle}" onerror="this.src='assets/placeholder.jpg'">`;
     hot.appendChild(a);
   });
 }
 
-async function fillThumbnailsFromFolders() {
-  const toFetch = allProps.filter(p => p.folderId && p.images.length === 0);
-  for (const p of toFetch) {
-    try {
-      const resp = await fetch(`${folderAPI}?id=${p.folderId}`);
-      const data = await resp.json(); // {files: [{view,thumb}, ...]}
-      if (data.files && data.files.length) {
-        p.images = data.files.map(f => f.view);
-      }
-    } catch (e) { /* ignore */ }
-  }
-  renderAll(); // re-render with new thumbs
-  renderHot();
-}
-
-// ========= Filters =========
+// ========== FILTERS ==========
 function applyFilters() {
   const q = document.getElementById('search').value.toLowerCase();
   const t = document.getElementById('type').value.toLowerCase();
@@ -162,21 +127,7 @@ function resetFilters() {
   renderAll();
 }
 
-// ========= Detail =========
-async function loadDetailImages(p) {
-  if (p.images.length) return p.images;
-  if (p.folderId && folderAPI) {
-    try {
-      const resp = await fetch(`${folderAPI}?id=${p.folderId}`);
-      const data = await resp.json();
-      const files = (data.files||[]).map(f => f.view);
-      if (files.length) p.images = files;
-      return p.images;
-    } catch(e) { return []; }
-  }
-  return [];
-}
-
+// ========== DETAIL ==========
 function getByQuery() {
   const id = new URLSearchParams(location.search).get('id');
   return allProps.find(x => String(x.id) === String(id));
@@ -191,8 +142,9 @@ async function renderDetail() {
 
   document.querySelector('.detail-title').textContent = p.displayTitle;
 
-  const imgs = await loadDetailImages(p);
-  const slides = imgs.map((u,i)=>`<img class="${i===0?'active':''}" src="${u}">`).join("") || `<img class="active" src="assets/placeholder.jpg">`;
+  const slides = (p.images.length ? p.images : ['assets/placeholder.jpg'])
+    .map((u,i)=>`<img class="${i===0?'active':''}" src="${u}" onerror="this.src='assets/placeholder.jpg'">`)
+    .join("");
 
   container.innerHTML = `
     <div class="row">

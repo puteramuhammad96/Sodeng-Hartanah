@@ -17,7 +17,7 @@
 .carousel img{width:280px;height:160px;object-fit:cover;border-radius:10px;background:#eee}
 .detail{padding:16px}
 .slides{position:relative;overflow:hidden;border-radius:12px;background:#eee}
-.slides img{width:100%;max-height:440px;object-fit:cover;display:none}
+.slides img{width:100%;max-height:480px;object-fit:cover;display:none}
 .slides img.active{display:block}
 .slide-nav{position:absolute;top:50%;left:0;right:0;display:flex;justify-content:space-between;transform:translateY(-50%);padding:0 10px}
 .slide-nav button{background:rgba(0,0,0,.45);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer}
