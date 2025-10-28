@@ -143,3 +143,4 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("locationFilter").addEventListener("change", applyFilters);
   document.getElementById("sortFilter").addEventListener("change", applyFilters);
 });
+
