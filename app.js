@@ -1,121 +1,86 @@
+// CSV Source
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNxseyugYylsAgoCbCRQruAKzk6fxLIyg_dhF9JvhbVgVX2ryQqHwIz4a2OUT8asciB1iSI7dQg1Uo/pub?gid=0&single=true&output=csv";
 
-let listings = [];
-let filteredListings = [];
+let listingsData = [];
 
-// Fetch CSV
 async function fetchListings() {
-  try {
-    const response = await fetch(SHEET_URL);
-    const csvText = await response.text();
-    listings = parseCSV(csvText);
-    filteredListings = listings;
-    renderListings();
-    populateFilters();
-  } catch (error) {
-    console.error("Error fetching listings:", error);
-  }
-}
-
-// CSV parser
-function parseCSV(csvText) {
-  const rows = csvText.trim().split("\n");
-  const headers = rows[0].split(",").map(h => h.trim());
-  return rows.slice(1).map(row => {
-    const values = row.split(",(?=(?:(?:[^\"]*\"){2})*[^\"]*$)").map(v => v.replace(/^"|"$/g, '').trim());
-    const obj = {};
-    headers.forEach((header, i) => {
-      obj[header] = values[i] || "";
-    });
-    return obj;
+  const res = await fetch(SHEET_URL);
+  const text = await res.text();
+  const rows = text.split("\n").slice(1);
+  listingsData = rows.map(r => {
+    const [ref, title, type, location, price] = r.split(",");
+    return { ref, title, type, location, price: parseFloat(price), folder: title };
   });
+  renderListings(listingsData);
+  renderCarousel(listingsData.slice(0, 3));
 }
 
-// Render listings
-function renderListings() {
+function renderListings(data) {
   const container = document.getElementById("listings");
   container.innerHTML = "";
+  data.forEach(listing => {
+    const folder = `assets/listings/${listing.folder}`;
+    const thumb = `${folder}/thumb.jpg`;
 
-  if (!filteredListings.length) {
-    container.innerHTML = "<p>No listings available.</p>";
-    return;
-  }
-
-  filteredListings.forEach(listing => {
-    const card = document.createElement("div");
-    card.className = "listing-card";
-
-    // Fallback image
-    let imgSrc = `assets/listings/${listing.title}/thumb.jpg`;
-    if (!listing.title) {
-      imgSrc = "assets/placeholder.jpg";
-    }
-
-    card.innerHTML = `
-      <img src="${imgSrc}" alt="${listing.title}" class="listing-image" onerror="this.src='assets/placeholder.jpg'">
-      <div class="listing-info">
-        <h3>${listing.title}</h3>
-        <p><strong>Price:</strong> RM${listing.price}</p>
-        <p><strong>Type:</strong> ${listing.type}</p>
-        <p><strong>Location:</strong> ${listing.location}</p>
-        <p><strong>Specs:</strong> ${listing.specs}</p>
-        <p><strong>Details:</strong> ${listing.details}</p>
-        <div class="listing-actions">
-          <a href="tel:+60123456789" class="btn-call">📞 Call</a>
-          <a href="https://wa.me/60123456789" target="_blank" class="btn-whatsapp">💬 WhatsApp</a>
-        </div>
+    const div = document.createElement("div");
+    div.className = "listing";
+    div.innerHTML = `
+      <img src="${thumb}" alt="${listing.title}" onerror="this.src='assets/placeholder.jpg'">
+      <h3>${listing.title}</h3>
+      <p class="price">RM ${listing.price.toLocaleString()}</p>
+      <div class="actions">
+        <a href="https://wa.me/601169429832?text=Hai, boleh saya tahu tentang property ${listing.title}" target="_blank">WhatsApp</a>
+        <a href="tel:+601169429832">Call</a>
       </div>
     `;
-    container.appendChild(card);
+    container.appendChild(div);
   });
 }
 
-// Populate filters
-function populateFilters() {
-  const locationFilter = document.getElementById("filter-location");
-  const uniqueLocations = [...new Set(listings.map(l => l.location).filter(Boolean))];
-  locationFilter.innerHTML = `<option value="">All Locations</option>`;
-  uniqueLocations.forEach(loc => {
-    const option = document.createElement("option");
-    option.value = loc;
-    option.textContent = loc;
-    locationFilter.appendChild(option);
+function renderCarousel(data) {
+  const carousel = document.getElementById("carousel");
+  carousel.innerHTML = "";
+  data.forEach(listing => {
+    const folder = `assets/listings/${listing.folder}`;
+    const thumb = `${folder}/thumb.jpg`;
+
+    const div = document.createElement("div");
+    div.className = "listing";
+    div.innerHTML = `
+      <img src="${thumb}" alt="${listing.title}" onerror="this.src='assets/placeholder.jpg'">
+      <h3>${listing.title}</h3>
+      <p class="price">RM ${listing.price.toLocaleString()}</p>
+    `;
+    carousel.appendChild(div);
   });
 }
 
-// Apply filters
-function applyFilters() {
-  const search = document.getElementById("search").value.toLowerCase();
-  const type = document.getElementById("filter-type").value;
-  const location = document.getElementById("filter-location").value;
-  const minPrice = parseInt(document.getElementById("min-price").value) || 0;
-  const maxPrice = parseInt(document.getElementById("max-price").value) || Infinity;
+// Search, Filter, Sort
+document.getElementById("search").addEventListener("input", e => {
+  const val = e.target.value.toLowerCase();
+  const filtered = listingsData.filter(l => l.title.toLowerCase().includes(val));
+  renderListings(filtered);
+});
 
-  filteredListings = listings.filter(l => {
-    const matchesSearch =
-      l.title.toLowerCase().includes(search) || l.location.toLowerCase().includes(search);
-    const matchesType = !type || l.type === type;
-    const matchesLocation = !location || l.location === location;
-    const price = parseInt(l.price) || 0;
-    const matchesPrice = price >= minPrice && price <= maxPrice;
-    return matchesSearch && matchesType && matchesLocation && matchesPrice;
-  });
+document.getElementById("filter-type").addEventListener("change", e => {
+  const val = e.target.value;
+  const filtered = val ? listingsData.filter(l => l.type === val) : listingsData;
+  renderListings(filtered);
+});
 
-  renderListings();
-}
+document.getElementById("filter-location").addEventListener("change", e => {
+  const val = e.target.value;
+  const filtered = val ? listingsData.filter(l => l.location === val) : listingsData;
+  renderListings(filtered);
+});
 
-// Reset filters
-function resetFilters() {
-  document.getElementById("search").value = "";
-  document.getElementById("filter-type").value = "";
-  document.getElementById("filter-location").value = "";
-  document.getElementById("min-price").value = "";
-  document.getElementById("max-price").value = "";
-  filteredListings = listings;
-  renderListings();
-}
+document.getElementById("sort-price").addEventListener("change", e => {
+  const val = e.target.value;
+  const sorted = [...listingsData].sort((a, b) =>
+    val === "asc" ? a.price - b.price : b.price - a.price
+  );
+  renderListings(sorted);
+});
 
 // Init
 fetchListings();
-
-
