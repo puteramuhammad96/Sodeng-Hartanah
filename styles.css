@@ -5,7 +5,6 @@ body {
   background: #f8f9fc;
   color: #333;
 }
-
 /* Header */
 header {
   background: linear-gradient(135deg, #0a1f44, #123c69);
@@ -13,32 +12,27 @@ header {
   padding: 15px;
   text-align: center;
 }
-
 .profile {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 15px;
 }
-
 .profile img {
   width: 80px;
   height: 80px;
   border-radius: 50%;
   border: 3px solid #f1c40f;
 }
-
 .tagline {
   font-style: italic;
   font-size: 14px;
   color: #f1c40f;
 }
-
 .social-links img {
   width: 24px;
   margin: 0 5px;
 }
-
 .filters {
   margin-top: 15px;
 }
@@ -49,24 +43,20 @@ header {
   border-radius: 5px;
   border: none;
 }
-
 /* Hot Listings */
 .hot-listings {
   background: #fefefe;
   padding: 20px;
   text-align: center;
 }
-
 .carousel {
   display: flex;
   overflow-x: auto;
   gap: 15px;
 }
-
 .carousel::-webkit-scrollbar {
   display: none;
 }
-
 /* Listings */
 .listing-grid {
   display: grid;
@@ -74,36 +64,30 @@ header {
   gap: 20px;
   padding: 20px;
 }
-
 .listing {
   background: white;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   overflow: hidden;
 }
-
 .listing img {
   width: 100%;
   height: 180px;
   object-fit: cover;
 }
-
 .listing h3 {
   margin: 10px;
 }
-
 .listing .price {
   color: #0a1f44;
   font-weight: bold;
   margin: 0 10px 10px 10px;
 }
-
 .listing .actions {
   display: flex;
   justify-content: space-around;
   padding: 10px;
 }
-
 .actions a {
   text-decoration: none;
   background: #0a1f44;
@@ -116,7 +100,6 @@ header {
   background: #f1c40f;
   color: #0a1f44;
 }
-
 /* Footer */
 footer {
   text-align: center;
@@ -124,7 +107,6 @@ footer {
   background: #123c69;
   color: white;
 }
-
 /* Mobile */
 @media (max-width: 768px) {
   .profile img {

@@ -1,4 +1,3 @@
-// CSV Source
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNxseyugYylsAgoCbCRQruAKzk6fxLIyg_dhF9JvhbVgVX2ryQqHwIz4a2OUT8asciB1iSI7dQg1Uo/pub?gid=0&single=true&output=csv";
 
 let listingsData = [];
@@ -21,7 +20,6 @@ function renderListings(data) {
   data.forEach(listing => {
     const folder = `assets/listings/${listing.folder}`;
     const thumb = `${folder}/thumb.jpg`;
-
     const div = document.createElement("div");
     div.className = "listing";
     div.innerHTML = `
@@ -43,7 +41,6 @@ function renderCarousel(data) {
   data.forEach(listing => {
     const folder = `assets/listings/${listing.folder}`;
     const thumb = `${folder}/thumb.jpg`;
-
     const div = document.createElement("div");
     div.className = "listing";
     div.innerHTML = `
@@ -55,25 +52,21 @@ function renderCarousel(data) {
   });
 }
 
-// Search, Filter, Sort
 document.getElementById("search").addEventListener("input", e => {
   const val = e.target.value.toLowerCase();
   const filtered = listingsData.filter(l => l.title.toLowerCase().includes(val));
   renderListings(filtered);
 });
-
 document.getElementById("filter-type").addEventListener("change", e => {
   const val = e.target.value;
   const filtered = val ? listingsData.filter(l => l.type === val) : listingsData;
   renderListings(filtered);
 });
-
 document.getElementById("filter-location").addEventListener("change", e => {
   const val = e.target.value;
   const filtered = val ? listingsData.filter(l => l.location === val) : listingsData;
   renderListings(filtered);
 });
-
 document.getElementById("sort-price").addEventListener("change", e => {
   const val = e.target.value;
   const sorted = [...listingsData].sort((a, b) =>
@@ -81,6 +74,4 @@ document.getElementById("sort-price").addEventListener("change", e => {
   );
   renderListings(sorted);
 });
-
-// Init
 fetchListings();
