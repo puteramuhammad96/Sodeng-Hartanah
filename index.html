@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sodeng Hartanah</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header class="profile">
+    <img src="assets/profile.jpg" alt="Profile" class="profile-pic" />
+    <div>
+      <h1>Sodeng Hartanah</h1>
+      <p class="tagline">"Kalau ngammm kita deal"</p>
+      <p class="subtitle">Property Consultant at One Dream Legacy East Coast</p>
+      <div class="social-links">
+        <a href="https://www.tiktok.com/@sodenghartanah" target="_blank"><img src="assets/icons/tiktok.svg" alt="TikTok"></a>
+        <a href="https://www.instagram.com/putera.adul" target="_blank"><img src="assets/icons/instagram.svg" alt="Instagram"></a>
+        <a href="https://www.facebook.com/profile.php?id=61582819297450" target="_blank"><img src="assets/icons/facebook.svg" alt="Facebook"></a>
+      </div>
+    </div>
+  </header>
+
+  <section class="filters">
+    <input type="text" id="searchInput" placeholder="Search title / location" />
+    <select id="typeFilter"><option value="">All Types</option></select>
+    <select id="locationFilter"><option value="">All Locations</option></select>
+    <input type="number" id="minPrice" placeholder="Min Price (RM)" />
+    <input type="number" id="maxPrice" placeholder="Max Price (RM)" />
+    <select id="sortFilter">
+      <option value="default">Sort: Default</option>
+      <option value="asc">Price: Low to High</option>
+      <option value="desc">Price: High to Low</option>
+    </select>
+    <button onclick="applyFilters()">Apply</button>
+    <button onclick="resetFilters()">Reset</button>
+  </section>
+
+  <main>
+    <h2>🔥 Hot Listings</h2>
+    <div class="listings" id="listings"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 Sodeng Hartanah • v6.8</p>
+  </footer>
+</body>
+</html>
