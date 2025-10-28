@@ -1,56 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sodeng Hartanah</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:,">
 </head>
-<body>
-  <header>
+<body id="page-home">
+  <header class="site-header">
     <div class="profile">
-      <img src="profile.jpg" alt="Profile" class="profile-pic" />
+      <img class="avatar" src="assets/profile.jpg" alt="Profile" onerror="this.style.display='none'">
       <div>
-        <h1>Sodeng Hartanah</h1>
-        <p><em>"Kalau ngam kita deal"</em></p>
-        <p>Property Consultant at One Dream Legacy East Coast</p>
-        <div class="social-links">
-          <a href="https://www.tiktok.com/@sodenghartanah" target="_blank"><i class="fab fa-tiktok"></i></a>
-          <a href="https://www.instagram.com/putera.adul?igsh=MWRiYmVtdW8waWFqZQ%3D%3D&utm_source=qr" target="_blank"><i class="fab fa-instagram"></i></a>
+        <h1 class="brand">Sodeng Hartanah</h1>
+        <p class="tagline">“Kalau ngam kita deal”</p>
+        <p class="role">Property Consultant at One Dream Legacy East Coast</p>
+        <div class="socials">
+          <a href="https://www.tiktok.com/@sodenghartanah" target="_blank" class="social" aria-label="TikTok">TikTok</a>
+          <a href="https://www.instagram.com/putera.adul?igsh=MWRiYmVtdW8waWFqZQ%3D%3D&utm_source=qr" target="_blank" class="social" aria-label="Instagram">IG</a>
         </div>
       </div>
     </div>
+
+    <div class="filters">
+      <input id="q" class="input" placeholder="Search title / location" />
+      <select id="type" class="input"></select>
+      <select id="loc" class="input"></select>
+      <input id="min" class="input" placeholder="Min Price (RM)" inputmode="numeric" />
+      <input id="max" class="input" placeholder="Max Price (RM)" inputmode="numeric" />
+      <select id="sort" class="input">
+        <option value="default">Sort: Default</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+      </select>
+      <button id="apply" class="btn">Apply</button>
+      <button id="reset" class="btn btn-ghost">Reset</button>
+    </div>
   </header>
 
-  <main>
-    <section>
-      <h2>🔥 Hot Listings</h2>
-      <div class="filters">
-        <input type="text" id="search" placeholder="Search by title or location">
-        <select id="typeFilter">
-          <option value="">All Types</option>
-          <option value="subsale">Subsale</option>
-          <option value="undercon">Undercon</option>
-          <option value="land">Land</option>
-        </select>
-        <input type="number" id="minPrice" placeholder="Min Price (RM)" />
-        <input type="number" id="maxPrice" placeholder="Max Price (RM)" />
-        <select id="sortFilter">
-          <option value="default">Sort: Default</option>
-          <option value="priceLow">Price: Low to High</option>
-          <option value="priceHigh">Price: High to Low</option>
-        </select>
-        <button onclick="applyFilters()">Apply</button>
-        <button onclick="resetFilters()">Reset</button>
-      </div>
-
-      <div id="properties" class="grid"></div>
-    </section>
+  <main class="container">
+    <section class="hotbar" id="hotbar"></section>
+    <section class="grid" id="cards"></section>
   </main>
 
-  <footer>
-    <p>© 2025 Sodeng Hartanah • v6.1</p>
+  <footer class="footer">
+    © <span id="y"></span> Sodeng Hartanah • v6.5
   </footer>
 
   <script src="script.js"></script>
