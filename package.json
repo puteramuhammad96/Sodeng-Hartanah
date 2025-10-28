@@ -1,0 +1,10 @@
+{
+  "name": "sodeng-hartanah",
+  "version": "1.0.0",
+  "description": "Property agent website",
+  "scripts": {
+    "prebuild": "node generate-images-json.js",
+    "build": "echo 'Build complete'"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sodeng Hartanah</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="profile">
+      <img src="assets/profile.jpg" alt="Profile" class="profile-img" />
+      <div class="profile-info">
+        <h1>Sodeng Hartanah</h1>
+        <p class="tagline">"Kalau ngammm kita deal"</p>
+        <div class="social-icons">
+          <a href="https://www.tiktok.com/@sodenghartanah" target="_blank">
+            <img src="assets/icons/tiktok.svg" alt="TikTok" />
+          </a>
+          <a href="https://www.instagram.com/putera.adul" target="_blank">
+            <img src="assets/icons/instagram.svg" alt="Instagram" />
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61582819297450" target="_blank">
+            <img src="assets/icons/facebook.svg" alt="Facebook" />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters">
+      <input type="text" id="searchBar" placeholder="Search by title or location..." />
+      <select id="typeFilter">
+        <option value="">All Types</option>
+        <option value="Land">Land</option>
+        <option value="Subsale">Subsale</option>
+        <option value="Undercon">Undercon</option>
+      </select>
+      <select id="locationFilter">
+        <option value="">All Locations</option>
+      </select>
+      <select id="sortFilter">
+        <option value="default">Sort By</option>
+        <option value="price-asc">Price (Low → High)</option>
+        <option value="price-desc">Price (High → Low)</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- HOT LISTINGS -->
+  <section class="hot-listings">
+    <h2>🔥 Hot Listings</h2>
+    <div class="carousel" id="hotCarousel"></div>
+  </section>
+
+  <!-- ALL LISTINGS -->
+  <main id="listings" class="listings"></main>
+
+  <!-- FOOTER CONTACT -->
+  <footer class="footer">
+    <a href="tel:+601169429832" class="contact-btn call">📞 Call</a>
+    <a href="https://wa.me/601169429832" class="contact-btn whatsapp">💬 WhatsApp</a>
+  </footer>
+</body>
+</html>
