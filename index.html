@@ -1,49 +1,117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sodeng Hartanah</title>
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="script.js"></script>
+  <link rel="icon" href="assets/favicon.png" />
 </head>
 <body>
-  <header class="profile">
-    <img src="assets/profile.jpg" alt="Profile" class="profile-pic" />
-    <div>
-      <h1>Sodeng Hartanah</h1>
-      <p class="tagline">"Kalau ngammm kita deal"</p>
-      <p class="subtitle">Property Consultant at One Dream Legacy East Coast</p>
-      <div class="social-links">
-        <a href="https://www.tiktok.com/@sodenghartanah" target="_blank"><img src="assets/icons/tiktok.svg" alt="TikTok"></a>
-        <a href="https://www.instagram.com/putera.adul" target="_blank"><img src="assets/icons/instagram.svg" alt="Instagram"></a>
-        <a href="https://www.facebook.com/profile.php?id=61582819297450" target="_blank"><img src="assets/icons/facebook.svg" alt="Facebook"></a>
+  <header class="site-header">
+    <div class="profile-compact">
+      <img src="assets/profile.jpg" alt="Profile" class="profile-pic" />
+      <div class="identity">
+        <h1 class="brand">Sodeng Hartanah</h1>
+        <p class="tagline">“Kalau ngammm kita deal”</p>
+        <p class="role">Property Consultant at One Dream Legacy East Coast</p>
+        <div class="socials">
+          <a class="icon-btn" id="linkTikTok" aria-label="TikTok" title="TikTok">
+            <img src="assets/icons/tiktok.svg" alt="TikTok" />
+          </a>
+          <a class="icon-btn" id="linkIG" aria-label="Instagram" title="Instagram">
+            <img src="assets/icons/instagram.svg" alt="Instagram" />
+          </a>
+          <a class="icon-btn" id="linkFB" aria-label="Facebook" title="Facebook">
+            <img src="assets/icons/facebook.svg" alt="Facebook" />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPACT FILTER BAR (shorter on mobile) -->
+    <div class="filters">
+      <div class="filter-row">
+        <input type="search" id="q" placeholder="Search title / location" />
+        <div class="select-wrap">
+          <select id="type">
+            <option value="">All Types</option>
+            <option value="Subsale">Subsale</option>
+            <option value="Undercon">Undercon</option>
+            <option value="Land">Land</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="select-wrap">
+          <select id="location">
+            <option value="">All Locations</option>
+          </select>
+        </div>
+        <input type="number" id="min" inputmode="numeric" placeholder="Min Price (RM)" />
+        <input type="number" id="max" inputmode="numeric" placeholder="Max Price (RM)" />
+        <div class="select-wrap">
+          <select id="sort">
+            <option value="default">Sort: Default</option>
+            <option value="priceAsc">Price: Low → High</option>
+            <option value="priceDesc">Price: High → Low</option>
+            <option value="titleAsc">Title: A → Z</option>
+          </select>
+        </div>
+        <button id="apply" class="btn primary">Apply</button>
+        <button id="reset" class="btn">Reset</button>
       </div>
     </div>
   </header>
 
-  <section class="filters">
-    <input type="text" id="searchInput" placeholder="Search title / location" />
-    <select id="typeFilter"><option value="">All Types</option></select>
-    <select id="locationFilter"><option value="">All Locations</option></select>
-    <input type="number" id="minPrice" placeholder="Min Price (RM)" />
-    <input type="number" id="maxPrice" placeholder="Max Price (RM)" />
-    <select id="sortFilter">
-      <option value="default">Sort: Default</option>
-      <option value="asc">Price: Low to High</option>
-      <option value="desc">Price: High to Low</option>
-    </select>
-    <button onclick="applyFilters()">Apply</button>
-    <button onclick="resetFilters()">Reset</button>
-  </section>
+  <main class="page">
+    <section class="hot">
+      <div class="section-title">
+        <img src="assets/icons/fire.svg" alt="" />
+        <h2>Hot Listings</h2>
+      </div>
+      <div id="hotGrid" class="grid"></div>
+    </section>
 
-  <main>
-    <h2>🔥 Hot Listings</h2>
-    <div class="listings" id="listings"></div>
+    <section class="all">
+      <h2 class="section-title-plain">All Properties</h2>
+      <div id="grid" class="grid"></div>
+    </section>
   </main>
 
-  <footer>
-    <p>© 2025 Sodeng Hartanah • v6.8</p>
+  <!-- Details Modal -->
+  <div id="detailsModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="modal-close" id="detailsClose" aria-label="Close">×</button>
+      <div class="modal-body">
+        <div class="modal-gallery">
+          <button class="gal-nav left" id="galPrev">‹</button>
+          <img id="galImage" src="" alt="Property image" />
+          <button class="gal-nav right" id="galNext">›</button>
+        </div>
+        <div class="modal-info">
+          <h3 id="detTitle"></h3>
+          <p class="det-price" id="detPrice"></p>
+          <div class="chips">
+            <span class="chip" id="detType"></span>
+            <span class="chip" id="detLocation"></span>
+          </div>
+          <p class="det-specs" id="detSpecs"></p>
+          <p class="det-details" id="detDetails"></p>
+          <div class="det-actions">
+            <a id="waBtn" class="btn primary" target="_blank" rel="noopener">WhatsApp</a>
+            <a id="callBtn" class="btn outline" href="#">Call</a>
+            <a id="mapBtn" class="btn ghost" target="_blank" rel="noopener">Map</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Sodeng Hartanah • v7.0</p>
   </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
