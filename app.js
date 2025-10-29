@@ -1,294 +1,92 @@
-/* ============================
-   CONFIG
-============================ */
-const CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNxseyugYylsAgoCbCRQruAKzk6fxLIyg_dhF9JvhbVgVX2ryQqHwIz4a2OUT8asciB1iSI7dQg1Uo/pub?gid=0&single=true&output=csv";
-
-// Contact settings
-const PHONE = "01169429832"; // for tel:
-const WA_BASE = "https://wa.me/6" + PHONE; // WhatsApp link
-
-/* ============================
-   HELPERS
-============================ */
-const $ = (s, p = document) => p.querySelector(s);
-const $$ = (s, p = document) => [...p.querySelectorAll(s)];
-
-function csvParse(text) {
-  // Robust CSV parser (supports quoted fields)
-  const rows = [];
-  let i = 0, field = "", row = [], inQuotes = false;
-
-  const pushField = () => { row.push(field); field = ""; };
-  const pushRow = () => { rows.push(row); row = []; };
-
-  while (i < text.length) {
-    const c = text[i];
-    if (inQuotes) {
-      if (c === '"') {
-        if (text[i + 1] === '"') { field += '"'; i++; }
-        else inQuotes = false;
-      } else field += c;
-    } else {
-      if (c === '"') inQuotes = true;
-      else if (c === ",") pushField();
-      else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; pushField(); pushRow(); }
-      else field += c;
-    }
-    i++;
-  }
-  pushField(); pushRow();
-
-  const headers = rows.shift().map(h => h.trim().toLowerCase());
-  return rows
-    .filter(r => r.some(x => (x||"").trim() !== ""))
-    .map(r => {
-      const o = {};
-      headers.forEach((h, idx) => o[h] = (r[idx] || "").trim());
-      return o;
-    });
-}
-
-function money(n) {
-  const x = parseFloat(String(n).replace(/[^\d.]/g, "")) || 0;
-  return "RM " + x.toLocaleString("en-MY", { maximumFractionDigits: 0 });
-}
-const isHot = v => /^(1|yes|true|hot)$/i.test(v || "");
-const unique = arr => [...new Set(arr.filter(Boolean))];
-const imgPathFor = (title, file) => `assets/listings/${encodeURIComponent(title)}/${file}`;
-
-/* ============================
-   STATE + ELEMENTS
-============================ */
-const state = {
-  all: [],
-  imagesCache: {},
-  current: null,
-  galleryIdx: 0
-};
-
 const els = {
-  hotWrap: $("#hotWrap"),
-  hotEmpty: $("#hotEmpty"),
-  listWrap: $("#listWrap"),
-  listEmpty: $("#listEmpty"),
-  q: $("#q"),
-  ftype: $("#ftype"),
-  floc: $("#floc"),
-  pmin: $("#pmin"),
-  pmax: $("#pmax"),
-  fsort: $("#fsort"),
-  apply: $("#apply"),
-  reset: $("#reset"),
-  // modal
-  modal: $("#modal"),
-  modalClose: $("#modalClose"),
-  mTitle: $("#mTitle"),
-  mPrice: $("#mPrice"),
-  mType: $("#mType"),
-  mLoc: $("#mLoc"),
-  mSpecs: $("#mSpecs"),
-  mMapWrap: $("#mMapWrap"),
-  mMap: $("#mMap"),
-  gImg: $("#gImg"),
-  gPrev: $("#gPrev"),
-  gNext: $("#gNext"),
-  waBtn: $("#waBtn"),
-  callBtn: $("#callBtn"),
+  search: document.getElementById("search"),
+  type: document.getElementById("typeFilter"),
+  location: document.getElementById("locationFilter"),
+  pmin: document.getElementById("pmin"),
+  pmax: document.getElementById("pmax"),
+  reset: document.getElementById("resetBtn"),
+  hotListings: document.getElementById("hotListings"),
+  allListings: document.getElementById("allListings"),
 };
 
-/* ============================
-   RENDERING
-============================ */
-function buildCard(item, isHotCard = false) {
-  const card = document.createElement("article");
-  card.className = "card";
-  const thumbSrc = imgPathFor(item.title, "thumb.jpg");
+let listings = [];
 
-  card.innerHTML = `
-    <img class="thumb lazy" data-src="${thumbSrc}" alt="${item.title}" onerror="this.onerror=null;this.src='assets/placeholder.jpg'">
-    <div class="card-body">
-      <p class="price">${money(item.price)}</p>
-      <h3 class="title">${item.title}</h3>
-      <p class="meta">${item.type || "-"} • ${item.location || "-"}</p>
-    </div>
-  `;
-  card.addEventListener("click", () => openModal(item));
-  (isHotCard ? els.hotWrap : els.listWrap).appendChild(card);
+// Format RM
+function formatRM(input) {
+  let val = input.value.replace(/[^\d]/g, "");
+  if (!val) {
+    input.value = "";
+    return;
+  }
+  const num = parseInt(val, 10);
+  input.value = "RM " + num.toLocaleString("en-MY");
 }
+
+function parseRM(val) {
+  return parseFloat(String(val).replace(/[^\d]/g, "")) || 0;
+}
+
+els.pmin.addEventListener("input", () => formatRM(els.pmin));
+els.pmax.addEventListener("input", () => formatRM(els.pmax));
 
 function render() {
-  const q = els.q.value.trim().toLowerCase();
-  const t = els.ftype.value;
-  const l = els.floc.value;
-  const s = els.fsort.value;
+  const q = els.search.value.toLowerCase();
+  const t = els.type.value;
+  const l = els.location.value;
+  const minP = parseRM(els.pmin.value) || 0;
+  const maxP = parseRM(els.pmax.value) || Infinity;
 
-  const minP = parseFloat(els.pmin.value) || 0;
-  const maxP = parseFloat(els.pmax.value) || Infinity;
+  const filtered = listings.filter(x =>
+    (!q || x.title.toLowerCase().includes(q) || x.location.toLowerCase().includes(q)) &&
+    (!t || x.type === t) &&
+    (!l || x.location === l) &&
+    x.price >= minP &&
+    x.price <= maxP
+  );
 
-  let data = [...state.all];
+  els.hotListings.innerHTML = "";
+  els.allListings.innerHTML = "";
 
-  if (q) data = data.filter(d => (d.title + " " + (d.location||"")).toLowerCase().includes(q));
-  if (t) data = data.filter(d => (d.type || "").toLowerCase() === t.toLowerCase());
-  if (l) data = data.filter(d => (d.location || "").toLowerCase() === l.toLowerCase());
-
-  // Price range filter
-  data = data.filter(d => {
-    const p = parseFloat(String(d.price).replace(/[^\d.]/g, "")) || 0;
-    return p >= minP && p <= maxP;
+  filtered.forEach(x => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="assets/listings/${x.folder}/thumb.jpg" alt="${x.title}">
+      <div class="card-body">
+        <div class="price">RM ${x.price.toLocaleString("en-MY")}</div>
+        <div class="title">${x.title}</div>
+        <div class="meta">${x.type} • ${x.location}</div>
+      </div>
+    `;
+    if (x.hot === "yes") els.hotListings.appendChild(card);
+    els.allListings.appendChild(card);
   });
-
-  // Sort
-  if (s === "price_asc") data.sort((a,b)=>(+a.price||0) - (+b.price||0));
-  if (s === "price_desc") data.sort((a,b)=>(+b.price||0) - (+a.price||0));
-  if (s === "title_asc") data.sort((a,b)=>a.title.localeCompare(b.title));
-
-  // Hot
-  els.hotWrap.innerHTML = "";
-  const hot = data.filter(d => isHot(d.hot));
-  if (!hot.length) els.hotEmpty.hidden = false;
-  else {
-    els.hotEmpty.hidden = true;
-    hot.forEach(d => buildCard(d, true));
-  }
-
-  // All
-  els.listWrap.innerHTML = "";
-  if (!data.length) els.listEmpty.hidden = false;
-  else {
-    els.listEmpty.hidden = true;
-    data.forEach(d => buildCard(d, false));
-  }
-
-  lazyLoad();
 }
 
-function populateFilters(data) {
-  const types = unique(data.map(d => (d.type || "").trim()));
-  const locs = unique(data.map(d => (d.location || "").trim()));
-  els.ftype.innerHTML = `<option value="">All Types</option>` + types.map(x=>`<option>${x}</option>`).join("");
-  els.floc.innerHTML = `<option value="">All Locations</option>` + locs.map(x=>`<option>${x}</option>`).join("");
-}
-
-/* ============================
-   MODAL & GALLERY
-============================ */
-async function ensureImages(item) {
-  if (state.imagesCache[item.title]) return state.imagesCache[item.title];
-
-  const imgs = [];
-  for (let i=1; i<=12; i++) {
-    const p = imgPathFor(item.title, `${i}.jpg`);
-    const ok = await imgExists(p);
-    if (ok) imgs.push(p);
-  }
-  if (!imgs.length) imgs.push("assets/placeholder.jpg");
-  state.imagesCache[item.title] = imgs;
-  return imgs;
-}
-
-function imgExists(url) {
-  return fetch(url, { method:'HEAD' }).then(r => r.ok).catch(()=>false);
-}
-
-async function openModal(item) {
-  state.current = item;
-  state.galleryIdx = 0;
-
-  els.mTitle.textContent = item.title;
-  els.mPrice.textContent = money(item.price);
-  els.mType.textContent = item.type || "-";
-  els.mLoc.textContent = item.location || "-";
-  els.mSpecs.textContent = item.specs || "-";
-
-  if (item.map) { els.mMap.href = item.map; els.mMapWrap.style.display = ""; }
-  else els.mMapWrap.style.display = "none";
-
-  const msg = encodeURIComponent(`Hai, saya nak tahu tentang "${item.title}"`);
-  els.waBtn.href = `${WA_BASE}?text=${msg}`;
-  els.callBtn.href = `tel:${PHONE}`;
-
-  const imgs = await ensureImages(item);
-  setGalleryImage(imgs[state.galleryIdx]);
-
-  els.modal.classList.add("show");
-  els.modal.setAttribute("aria-hidden","false");
-}
-
-function setGalleryImage(src) {
-  els.gImg.src = src;
-  els.gImg.onerror = () => els.gImg.src = "assets/placeholder.jpg";
-}
-
-els.gPrev.addEventListener("click", ()=>{
-  const imgs = state.imagesCache[state.current.title] || [];
-  if (!imgs.length) return;
-  state.galleryIdx = (state.galleryIdx - 1 + imgs.length) % imgs.length;
-  setGalleryImage(imgs[state.galleryIdx]);
-});
-els.gNext.addEventListener("click", ()=>{
-  const imgs = state.imagesCache[state.current.title] || [];
-  if (!imgs.length) return;
-  state.galleryIdx = (state.galleryIdx + 1) % imgs.length;
-  setGalleryImage(imgs[state.galleryIdx]);
-});
-els.modalClose.addEventListener("click", closeModal);
-els.modal.addEventListener("click", e => { if (e.target === els.modal) closeModal(); });
-
-function closeModal(){
-  els.modal.classList.remove("show");
-  els.modal.setAttribute("aria-hidden","true");
-}
-
-/* ============================
-   LAZY IMAGES
-============================ */
-function lazyLoad(){
-  const imgs = $$(".lazy");
-  const io = new IntersectionObserver((entries, obs)=>{
-    entries.forEach(en=>{
-      if(en.isIntersecting){
-        const img = en.target;
-        img.src = img.dataset.src;
-        img.classList.remove("lazy");
-        obs.unobserve(img);
-      }
-    })
-  },{rootMargin:"200px 0px"});
-  imgs.forEach(im=>io.observe(im));
-}
-
-/* ============================
-   INIT
-============================ */
-async function init(){
-  const res = await fetch(CSV_URL);
-  const text = await res.text();
-  const rows = csvParse(text);
-
-  state.all = rows.map(r => ({
-    ref: r.ref || "",
-    title: r.title || r.displaytitle || "",
-    price: r.price || "",
-    type: r.type || "",
-    location: r.location || "",
-    specs: r.specs || "",
-    map: r.map || "",
-    hot: r.hot || ""
-  })).filter(x => x.title);
-
-  populateFilters(state.all);
+els.reset.addEventListener("click", () => {
+  els.search.value = "";
+  els.type.value = "";
+  els.location.value = "";
+  els.pmin.value = "";
+  els.pmax.value = "";
   render();
+});
 
-  els.apply.addEventListener("click", render);
-  els.reset.addEventListener("click", ()=>{
-    els.q.value="";
-    els.ftype.value="";
-    els.floc.value="";
-    els.pmin.value="";
-    els.pmax.value="";
-    els.fsort.value="default";
+fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQNxseyugYylsAgoCbCRQruAKzk6fxLIyg_dhF9JvhbVgVX2ryQqHwIz4a2OUT8asciB1iSI7dQg1Uo/pub?gid=0&single=true&output=csv")
+  .then(res => res.text())
+  .then(text => {
+    const rows = text.split("\n").map(r => r.split(","));
+    const header = rows.shift();
+    listings = rows.map(r => {
+      return {
+        title: r[0],
+        price: parseFloat(r[1]) || 0,
+        type: r[2],
+        location: r[3],
+        specs: r[4],
+        hot: r[5],
+        folder: r[6] || ""
+      };
+    });
     render();
   });
-}
-init();
