@@ -3,13 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sodeng Hartanah</title>
+  <title>Sodeng Hartanah | PropertyNgam.my</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- HEADER -->
   <header class="header">
     <div class="header-left">
-      <h1>Sodeng Hartanah</h1>
+      <h1 class="brand">Sodeng Hartanah <span class="divider">|</span> PropertyNgam.my</h1>
       <p class="tagline">“Kalau ngammm kita deal”</p>
       <p class="subtitle">Property Consultant at One Dream Legacy East Coast</p>
       <div class="social-links">
@@ -23,6 +28,7 @@
     </div>
   </header>
 
+  <!-- FILTERS -->
   <section class="filters">
     <input type="text" id="searchInput" placeholder="Search by title or location"/>
     <select id="typeFilter"><option value="">All Types</option></select>
@@ -36,6 +42,7 @@
     <button onclick="resetFilters()">Reset</button>
   </section>
 
+  <!-- CONTENT -->
   <main>
     <section class="hot-listings">
       <h2>🔥 Hot Listings</h2>
@@ -48,7 +55,7 @@
     </section>
   </main>
 
-  <!-- Modal -->
+  <!-- MODAL -->
   <div id="listingModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
@@ -61,8 +68,9 @@
     </div>
   </div>
 
+  <!-- FOOTER -->
   <footer>
-    <p>© 2025 Sodeng Hartanah • v7.4</p>
+    <p>© 2025 Sodeng Hartanah | PropertyNgam.my • v7.5</p>
   </footer>
 
   <script src="app.js"></script>
