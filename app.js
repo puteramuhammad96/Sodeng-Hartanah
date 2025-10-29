@@ -5,8 +5,8 @@ const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNxseyugYylsAgoCbCRQruAKzk6fxLIyg_dhF9JvhbVgVX2ryQqHwIz4a2OUT8asciB1iSI7dQg1Uo/pub?gid=0&single=true&output=csv";
 
 // Contact settings
-const PHONE = "01169429832"; // Malaysia number, no +60 needed for wa
-const WA_BASE = "https://wa.me/6" + PHONE; // 6 + 011... handles leading zero
+const PHONE = "01169429832"; // for tel:
+const WA_BASE = "https://wa.me/6" + PHONE; // WhatsApp link
 
 /* ============================
    HELPERS
@@ -15,81 +15,54 @@ const $ = (s, p = document) => p.querySelector(s);
 const $$ = (s, p = document) => [...p.querySelectorAll(s)];
 
 function csvParse(text) {
-  // Small, robust CSV parser (handles quoted fields)
+  // Robust CSV parser (supports quoted fields)
   const rows = [];
   let i = 0, field = "", row = [], inQuotes = false;
 
-  function pushField() {
-    row.push(field);
-    field = "";
-  }
-  function pushRow() {
-    rows.push(row);
-    row = [];
-  }
+  const pushField = () => { row.push(field); field = ""; };
+  const pushRow = () => { rows.push(row); row = []; };
 
   while (i < text.length) {
     const c = text[i];
     if (inQuotes) {
       if (c === '"') {
-        if (text[i + 1] === '"') {
-          field += '"';
-          i++;
-        } else inQuotes = false;
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
       } else field += c;
     } else {
       if (c === '"') inQuotes = true;
       else if (c === ",") pushField();
-      else if (c === "\n" || c === "\r") {
-        // handle \r\n or \n
-        if (c === "\r" && text[i + 1] === "\n") i++;
-        pushField();
-        pushRow();
-      } else field += c;
+      else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; pushField(); pushRow(); }
+      else field += c;
     }
     i++;
   }
-  // flush last
-  pushField();
-  pushRow();
+  pushField(); pushRow();
 
-  // headers
   const headers = rows.shift().map(h => h.trim().toLowerCase());
   return rows
-    .filter(r => r.some(x => x.trim() !== ""))
+    .filter(r => r.some(x => (x||"").trim() !== ""))
     .map(r => {
-      const obj = {};
-      headers.forEach((h, idx) => (obj[h] = (r[idx] || "").trim()));
-      return obj;
+      const o = {};
+      headers.forEach((h, idx) => o[h] = (r[idx] || "").trim());
+      return o;
     });
 }
 
 function money(n) {
-  if (!n) return "RM 0";
   const x = parseFloat(String(n).replace(/[^\d.]/g, "")) || 0;
   return "RM " + x.toLocaleString("en-MY", { maximumFractionDigits: 0 });
 }
-
-function isHot(v) {
-  return /^(1|yes|true|hot)$/i.test(v || "");
-}
-
-function unique(arr) {
-  return [...new Set(arr.filter(Boolean))];
-}
-
-function imgPathFor(title, file) {
-  // folder is EXACT title; encode for spaces etc.
-  return `assets/listings/${encodeURIComponent(title)}/${file}`;
-}
+const isHot = v => /^(1|yes|true|hot)$/i.test(v || "");
+const unique = arr => [...new Set(arr.filter(Boolean))];
+const imgPathFor = (title, file) => `assets/listings/${encodeURIComponent(title)}/${file}`;
 
 /* ============================
-   RENDERING
+   STATE + ELEMENTS
 ============================ */
 const state = {
   all: [],
-  filtered: [],
-  imagesCache: {}, // title -> array of images found
+  imagesCache: {},
   current: null,
   galleryIdx: 0
 };
@@ -102,6 +75,8 @@ const els = {
   q: $("#q"),
   ftype: $("#ftype"),
   floc: $("#floc"),
+  pmin: $("#pmin"),
+  pmax: $("#pmax"),
   fsort: $("#fsort"),
   apply: $("#apply"),
   reset: $("#reset"),
@@ -122,7 +97,10 @@ const els = {
   callBtn: $("#callBtn"),
 };
 
-function buildCard(item, hot = false) {
+/* ============================
+   RENDERING
+============================ */
+function buildCard(item, isHotCard = false) {
   const card = document.createElement("article");
   card.className = "card";
   const thumbSrc = imgPathFor(item.title, "thumb.jpg");
@@ -136,28 +114,36 @@ function buildCard(item, hot = false) {
     </div>
   `;
   card.addEventListener("click", () => openModal(item));
-  (hot ? els.hotWrap : els.listWrap).appendChild(card);
+  (isHotCard ? els.hotWrap : els.listWrap).appendChild(card);
 }
 
 function render() {
-  // Filters
   const q = els.q.value.trim().toLowerCase();
   const t = els.ftype.value;
   const l = els.floc.value;
   const s = els.fsort.value;
 
+  const minP = parseFloat(els.pmin.value) || 0;
+  const maxP = parseFloat(els.pmax.value) || Infinity;
+
   let data = [...state.all];
 
-  if (q) data = data.filter(d => (d.title+d.location).toLowerCase().includes(q));
+  if (q) data = data.filter(d => (d.title + " " + (d.location||"")).toLowerCase().includes(q));
   if (t) data = data.filter(d => (d.type || "").toLowerCase() === t.toLowerCase());
   if (l) data = data.filter(d => (d.location || "").toLowerCase() === l.toLowerCase());
 
-  // sort
+  // Price range filter
+  data = data.filter(d => {
+    const p = parseFloat(String(d.price).replace(/[^\d.]/g, "")) || 0;
+    return p >= minP && p <= maxP;
+  });
+
+  // Sort
   if (s === "price_asc") data.sort((a,b)=>(+a.price||0) - (+b.price||0));
   if (s === "price_desc") data.sort((a,b)=>(+b.price||0) - (+a.price||0));
   if (s === "title_asc") data.sort((a,b)=>a.title.localeCompare(b.title));
 
-  // render hot
+  // Hot
   els.hotWrap.innerHTML = "";
   const hot = data.filter(d => isHot(d.hot));
   if (!hot.length) els.hotEmpty.hidden = false;
@@ -166,26 +152,22 @@ function render() {
     hot.forEach(d => buildCard(d, true));
   }
 
-  // render list
+  // All
   els.listWrap.innerHTML = "";
-  const rest = data;
-  if (!rest.length) els.listEmpty.hidden = false;
+  if (!data.length) els.listEmpty.hidden = false;
   else {
     els.listEmpty.hidden = true;
-    rest.forEach(d => buildCard(d, false));
+    data.forEach(d => buildCard(d, false));
   }
 
-  // lazy images
   lazyLoad();
 }
 
 function populateFilters(data) {
-  const types = unique(data.map(d => (d.type || "").trim()).filter(Boolean));
-  const locs = unique(data.map(d => (d.location || "").trim()).filter(Boolean));
-  els.ftype.innerHTML = `<option value="">All Types</option>` +
-    types.map(x => `<option>${x}</option>`).join("");
-  els.floc.innerHTML = `<option value="">All Locations</option>` +
-    locs.map(x => `<option>${x}</option>`).join("");
+  const types = unique(data.map(d => (d.type || "").trim()));
+  const locs = unique(data.map(d => (d.location || "").trim()));
+  els.ftype.innerHTML = `<option value="">All Types</option>` + types.map(x=>`<option>${x}</option>`).join("");
+  els.floc.innerHTML = `<option value="">All Locations</option>` + locs.map(x=>`<option>${x}</option>`).join("");
 }
 
 /* ============================
@@ -194,7 +176,6 @@ function populateFilters(data) {
 async function ensureImages(item) {
   if (state.imagesCache[item.title]) return state.imagesCache[item.title];
 
-  // Try numbered files 1..8 (adjustable)
   const imgs = [];
   for (let i=1; i<=12; i++) {
     const p = imgPathFor(item.title, `${i}.jpg`);
@@ -220,12 +201,9 @@ async function openModal(item) {
   els.mLoc.textContent = item.location || "-";
   els.mSpecs.textContent = item.specs || "-";
 
-  if (item.map) {
-    els.mMap.href = item.map;
-    els.mMapWrap.style.display = "";
-  } else els.mMapWrap.style.display = "none";
+  if (item.map) { els.mMap.href = item.map; els.mMapWrap.style.display = ""; }
+  else els.mMapWrap.style.display = "none";
 
-  // Contacts
   const msg = encodeURIComponent(`Hai, saya nak tahu tentang "${item.title}"`);
   els.waBtn.href = `${WA_BASE}?text=${msg}`;
   els.callBtn.href = `tel:${PHONE}`;
@@ -288,8 +266,6 @@ async function init(){
   const text = await res.text();
   const rows = csvParse(text);
 
-  // Normalize keys we care about:
-  // ref, title, price, type, location, specs, map, hot
   state.all = rows.map(r => ({
     ref: r.ref || "",
     title: r.title || r.displaytitle || "",
@@ -304,12 +280,13 @@ async function init(){
   populateFilters(state.all);
   render();
 
-  // Apply/reset
   els.apply.addEventListener("click", render);
   els.reset.addEventListener("click", ()=>{
     els.q.value="";
     els.ftype.value="";
     els.floc.value="";
+    els.pmin.value="";
+    els.pmax.value="";
     els.fsort.value="default";
     render();
   });
