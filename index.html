@@ -1,104 +1,70 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sodeng Hartanah</title>
-
-  <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- Swiper (gallery) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
-  <!-- Header (corporate) -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-side">
-        <h1 class="brand">Sodeng Hartanah</h1>
-        <p class="tagline">“Kalau ngammm kita deal”</p>
-        <p class="role">Property Consultant at One Dream Legacy East Coast</p>
-
-        <div class="socials">
-          <!-- use SVGs from /icons -->
-          <a href="https://www.tiktok.com/@sodenghartanah" target="_blank" aria-label="TikTok">
-            <img src="icons/tiktok.svg" alt="TikTok" />
-          </a>
-          <a href="https://www.instagram.com/putera.adul?igsh=MWRiYmVtdW8waWFqZQ%3D%3D&utm_source=qr" target="_blank" aria-label="Instagram">
-            <img src="icons/instagram.svg" alt="Instagram" />
-          </a>
-          <a href="https://www.facebook.com/profile.php?id=61582819297450" target="_blank" aria-label="Facebook">
-            <img src="icons/facebook.svg" alt="Facebook" />
-          </a>
-        </div>
-      </div>
-
-      <div class="profile-side">
-        <img class="profile-photo" src="assets/profile.jpg" alt="Profile" />
+  <header class="header">
+    <div class="header-left">
+      <h1>Sodeng Hartanah</h1>
+      <p class="tagline">“Kalau ngammm kita deal”</p>
+      <p class="subtitle">Property Consultant at One Dream Legacy East Coast</p>
+      <div class="social-links">
+        <a href="https://www.tiktok.com/@sodenghartanah" target="_blank"><img src="icons/tiktok.png" alt="TikTok"></a>
+        <a href="https://www.instagram.com/putera.adul" target="_blank"><img src="icons/instagram.png" alt="Instagram"></a>
+        <a href="https://www.facebook.com/profile.php?id=61582819297450" target="_blank"><img src="icons/facebook.png" alt="Facebook"></a>
       </div>
     </div>
-
-    <!-- Filters -->
-    <div class="filters">
-      <input id="q" class="input" type="search" placeholder="Search title or location" />
-      <select id="type" class="input"></select>
-      <select id="loc" class="input"></select>
-      <select id="sort" class="input">
-        <option value="default">Sort</option>
-        <option value="priceAsc">Sort by Price (Low → High)</option>
-        <option value="priceDesc">Sort by Price (High → Low)</option>
-        <option value="newest">Newest First</option>
-      </select>
-      <button id="apply" class="btn btn-primary">Apply</button>
-      <button id="reset" class="btn btn-ghost">Reset</button>
+    <div class="header-right">
+      <img src="assets/profile.jpg" alt="Profile" class="profile-pic"/>
     </div>
   </header>
 
-  <main class="container">
-    <!-- Hot listings -->
-    <section class="section">
-      <h2 class="section-title"><span class="dot">🔥</span> Hot Listings</h2>
-      <div id="hotGrid" class="grid"></div>
+  <section class="filters">
+    <input type="text" id="searchInput" placeholder="Search by title or location"/>
+    <select id="typeFilter"><option value="">All Types</option></select>
+    <select id="locationFilter"><option value="">All Locations</option></select>
+    <select id="sortFilter">
+      <option value="">Sort</option>
+      <option value="priceAsc">Price ↑</option>
+      <option value="priceDesc">Price ↓</option>
+    </select>
+    <button onclick="applyFilters()">Apply</button>
+    <button onclick="resetFilters()">Reset</button>
+  </section>
+
+  <main>
+    <section class="hot-listings">
+      <h2>🔥 Hot Listings</h2>
+      <div id="hotListings" class="card-grid"></div>
     </section>
 
-    <!-- All listings -->
-    <section class="section">
-      <h2 class="section-title">All Listings</h2>
-      <div id="listGrid" class="grid"></div>
+    <section class="all-listings">
+      <h2>All Listings</h2>
+      <div id="listings" class="card-grid"></div>
     </section>
   </main>
 
-  <!-- Sticky contact bar -->
-  <div class="sticky-actions">
-    <a id="waGlobal" class="btn btn-success" href="#" target="_blank">WhatsApp</a>
-    <a id="callGlobal" class="btn btn-secondary" href="tel:+601169429832">Call</a>
-  </div>
-
-  <!-- Modal (property details with Swiper gallery) -->
-  <div id="modal" class="modal">
-    <div class="modal-body">
-      <button class="modal-close" id="closeModal" aria-label="Close">×</button>
-      <h3 id="mTitle" class="m-title"></h3>
-      <div id="mMeta" class="m-meta"></div>
-
-      <!-- Swiper gallery -->
-      <div class="swiper" id="gallerySwiper">
-        <div class="swiper-wrapper" id="mSlides"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-pagination"></div>
-      </div>
-
+  <!-- Modal -->
+  <div id="listingModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <div id="modalDetails"></div>
+      <div id="modalImages" class="modal-images"></div>
       <div class="modal-actions">
-        <a id="mWa" class="btn btn-success" href="#" target="_blank">WhatsApp</a>
-        <a id="mCall" class="btn btn-secondary" href="tel:+601169429832">Call</a>
+        <a id="whatsappBtn" target="_blank" class="btn whatsapp">WhatsApp</a>
+        <a id="callBtn" class="btn call">Call</a>
       </div>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <footer>
+    <p>© 2025 Sodeng Hartanah • v7.4</p>
+  </footer>
+
   <script src="app.js"></script>
 </body>
 </html>
