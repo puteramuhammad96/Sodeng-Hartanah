@@ -1,61 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sodeng Hartanah</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css"/>
+  <!-- PapaParse for robust CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
-  <header>
+  <header class="header">
     <div class="profile">
-      <img src="assets/profile.jpg" alt="Profile">
-      <div>
+      <img src="assets/profile.jpg" alt="Profile" class="profile-pic"/>
+      <div class="profile-info">
         <h1>Sodeng Hartanah</h1>
         <p class="tagline">"Kalau ngammm kita deal"</p>
-        <div class="social-links">
-          <a href="https://www.tiktok.com/@sodenghartanah" target="_blank"><img src="icons/tiktok.png" alt="TikTok"></a>
-          <a href="https://www.instagram.com/putera.adul" target="_blank"><img src="icons/instagram.png" alt="Instagram"></a>
-          <a href="https://www.facebook.com/profile.php?id=61582819297450" target="_blank"><img src="icons/facebook.png" alt="Facebook"></a>
+        <p class="subtitle">Property Consultant at One Dream Legacy East Coast</p>
+        <div class="socials">
+          <a href="https://www.tiktok.com/@sodenghartanah" target="_blank" aria-label="TikTok">
+            <img src="icons/tiktok.png" alt="TikTok"/>
+          </a>
+          <a href="https://www.instagram.com/putera.adul" target="_blank" aria-label="Instagram">
+            <img src="icons/instagram.png" alt="Instagram"/>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61582819297450" target="_blank" aria-label="Facebook">
+            <img src="icons/facebook.png" alt="Facebook"/>
+          </a>
         </div>
       </div>
     </div>
+
     <div class="filters">
-      <input type="text" id="search" placeholder="Search by name...">
-      <select id="filter-type">
+      <input id="q" type="search" placeholder="Search title or location"/>
+      <select id="type">
         <option value="">All Types</option>
         <option value="Land">Land</option>
         <option value="Subsale">Subsale</option>
         <option value="Undercon">Undercon</option>
       </select>
-      <select id="filter-location">
+      <select id="location">
         <option value="">All Locations</option>
-        <option value="Kuantan">Kuantan</option>
-        <option value="Kemaman">Kemaman</option>
-        <option value="Dungun">Dungun</option>
       </select>
-      <select id="sort-price">
-        <option value="">Sort by Price</option>
-        <option value="asc">Lowest First</option>
-        <option value="desc">Highest First</option>
+      <select id="sort">
+        <option value="default">Sort</option>
+        <option value="priceAsc">Price: Low → High</option>
+        <option value="priceDesc">Price: High → Low</option>
+        <option value="titleAsc">Title: A → Z</option>
       </select>
     </div>
   </header>
 
-  <section class="hot-listings">
+  <section class="hot">
     <h2>🔥 Hot Listings</h2>
-    <div class="carousel" id="carousel"></div>
+    <div id="hotCarousel" class="carousel"></div>
   </section>
 
   <main>
     <h2>All Listings</h2>
-    <div id="listings" class="listing-grid"></div>
+    <div id="grid" class="grid"></div>
   </main>
 
-  <footer>
-    <p>© 2025 Sodeng Hartanah. All rights reserved.</p>
+  <footer class="footer">
+    <a class="btn call" href="tel:+601169429832">📞 Call</a>
+    <a class="btn whatsapp" href="https://wa.me/601169429832" target="_blank">💬 WhatsApp</a>
   </footer>
 
-  <script src="app.js"></script>
+  <!-- Modal for details -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-body">
+      <button id="modalClose" class="modal-close">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
 </body>
 </html>
