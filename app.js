@@ -1,5 +1,4 @@
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNxseyugYylsAgoCbCRQruAKzk6fxLIyg_dhF9JvhbVgVX2ryQqHwIz4a2OUT8asciB1iSI7dQg1Uo/pub?gid=0&single=true&output=csv";
-
 let listings = [];
 
 async function fetchListings() {
@@ -8,15 +7,16 @@ async function fetchListings() {
   const rows = text.split("\n").map(r => r.split(",")).filter(r => r[0] && r[0] !== "ref");
 
   listings = rows.map(r => ({
-    ref: r[0],
-    title: r[1],
+    ref: r[0]?.trim(),
+    title: r[1]?.trim(),
     price: parseInt(r[2]) || 0,
-    type: r[3],
-    location: r[4],
-    specs: r[5],
-    details: r[6],
-    map: r[7],
-    hot: r[8] && r[8].toLowerCase().includes("yes")
+    type: r[3]?.trim(),
+    location: r[4]?.trim(),
+    specs: r[5]?.trim(),
+    details: r[6]?.trim(),
+    map: r[7]?.trim(),
+    hot: r[8] && r[8].trim().toLowerCase() === "yes",
+    remarks: r[9]?.trim()
   }));
 
   renderFilters();
@@ -56,9 +56,7 @@ function renderListings() {
   const hotListings = filtered.filter(l => l.hot);
   const normalListings = filtered.filter(l => !l.hot);
 
-  if (hotListings.length === 0) hot.innerHTML = "<p>Tiada listing ditemui.</p>";
-  else hotListings.forEach(l => hot.appendChild(createCard(l)));
-
+  hotListings.forEach(l => hot.appendChild(createCard(l)));
   normalListings.forEach(l => all.appendChild(createCard(l)));
 }
 
@@ -69,7 +67,7 @@ function createCard(listing) {
   const thumb = `${folder}/thumb.jpg`;
 
   card.innerHTML = `
-    <img src="${thumb}" alt="${listing.title}" onerror="this.src='assets/placeholder.jpg'"/>
+    <img src="${thumb}" alt="${listing.title}" loading="lazy" onerror="this.src='assets/placeholder.jpg'"/>
     <div class="info">
       <p class="price">RM ${listing.price.toLocaleString()}</p>
       <h3>${listing.title}</h3>
@@ -89,8 +87,9 @@ function openModal(listing) {
     <p><strong>Price:</strong> RM ${listing.price.toLocaleString()}</p>
     <p><strong>Type:</strong> ${listing.type} • <strong>Location:</strong> ${listing.location}</p>
     <p><strong>Specs:</strong> ${listing.specs}</p>
-    <p>${listing.details || ""}</p>
-    <a href="${listing.map}" target="_blank">📍 View Map</a>
+    <p><strong>Details:</strong> ${listing.details}</p>
+    <p><em>Remarks (Owner):</em> ${listing.remarks || "-"}</p>
+    ${listing.map ? `<a href="${listing.map}" target="_blank">📍 View Map</a>` : ""}
   `;
 
   const modalImages = document.getElementById("modalImages");
@@ -101,6 +100,7 @@ function openModal(listing) {
   function loadNext() {
     const img = new Image();
     img.src = `${folder}/${i}.jpg`;
+    img.loading = "lazy";
     img.onerror = () => {};
     img.onload = () => {
       modalImages.appendChild(img);
