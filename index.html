@@ -7,45 +7,60 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="header">
+  <header>
     <div class="header-left">
-      <h1>Sodeng Hartanah <span>| Propertyngam.my</span></h1>
+      <h1><span class="brand">Sodeng Hartanah</span> | <span class="subbrand">Propertyngam.my</span></h1>
       <p class="tagline">“Kalau ngammm kita deal”</p>
-      <p class="job">Property Consultant at One Dream Legacy East Coast</p>
+      <p class="subtitle">Property Consultant at One Dream Legacy East Coast</p>
       <div class="social-icons">
-        <a href="https://www.tiktok.com" target="_blank"><img src="icons/tiktok.png" alt="TikTok"></a>
-        <a href="https://www.instagram.com" target="_blank"><img src="icons/instagram.png" alt="Instagram"></a>
-        <a href="https://www.facebook.com" target="_blank"><img src="icons/facebook.png" alt="Facebook"></a>
+        <a href="https://www.tiktok.com/@sodenghartanah" target="_blank">
+          <img src="icons/tiktok.png" alt="TikTok">
+        </a>
+        <a href="https://www.instagram.com/putera.adul" target="_blank">
+          <img src="icons/instagram.png" alt="Instagram">
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=61582819297450" target="_blank">
+          <img src="icons/facebook.png" alt="Facebook">
+        </a>
       </div>
     </div>
     <div class="header-right">
-      <img src="assets/profile.jpg" alt="Profile" class="profile-pic">
+      <img src="assets/profile.jpg" alt="Profile Picture" class="profile-pic">
     </div>
   </header>
 
   <section class="filters">
-    <input type="text" id="searchInput" placeholder="Search by title or location">
+    <input type="text" id="search" placeholder="Search by title or location">
     <select id="typeFilter">
       <option value="">All Types</option>
     </select>
     <select id="locationFilter">
       <option value="">All Locations</option>
     </select>
-    <input type="text" id="minPrice" placeholder="Min Price (RM)">
-    <input type="text" id="maxPrice" placeholder="Max Price (RM)">
-    <button id="resetBtn">Reset</button>
+    <input type="number" id="minPrice" placeholder="Min Price (RM)">
+    <input type="number" id="maxPrice" placeholder="Max Price (RM)">
+    <button onclick="resetFilters()">Reset</button>
   </section>
 
   <main>
-    <section>
+    <section id="hotListings">
       <h2>🔥 Hot Listings</h2>
-      <div id="hotListings" class="listings"></div>
+      <div class="listings-grid" id="hotListingsGrid"></div>
     </section>
-    <section>
-      <h2>All Listings</h2>
-      <div id="allListings" class="listings"></div>
+
+    <section id="allListings">
+      <h2>📋 All Listings</h2>
+      <div class="listings-grid" id="allListingsGrid"></div>
     </section>
   </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <div id="modalBody"></div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
