@@ -96,3 +96,33 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
   #pmin,#pmax{max-width:140px}
   .gframe{height:300px}
 }
+/* === Hot Listing Carousel === */
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.carousel::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+  border-radius: 10px;
+}
+.carousel .card {
+  flex: 0 0 auto;
+  width: 280px;
+  scroll-snap-align: start;
+}
+
+/* === Share Button === */
+.btn.share {
+  background: #f59e0b;
+  color: #fff;
+}
+.btn.share:hover {
+  opacity: 0.9;
+}
