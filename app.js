@@ -5,8 +5,8 @@ const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNxseyugYylsAgoCbCRQruAKzk6fxLIyg_dhF9JvhbVgVX2ryQqHwIz4a2OUT8asciB1iSI7dQg1Uo/pub?gid=0&single=true&output=csv";
 
 // Contact settings
-const PHONE = "01169429832"; // for tel:
-const WA_BASE = "https://wa.me/6" + PHONE; // WhatsApp link
+const PHONE = "01169429832";
+const WA_BASE = "https://wa.me/6" + PHONE;
 
 /* ============================
    HELPERS
@@ -15,10 +15,8 @@ const $ = (s, p = document) => p.querySelector(s);
 const $$ = (s, p = document) => [...p.querySelectorAll(s)];
 
 function csvParse(text) {
-  // Robust CSV parser (supports quoted fields)
   const rows = [];
   let i = 0, field = "", row = [], inQuotes = false;
-
   const pushField = () => { row.push(field); field = ""; };
   const pushRow = () => { rows.push(row); row = []; };
 
@@ -38,10 +36,8 @@ function csvParse(text) {
     i++;
   }
   pushField(); pushRow();
-
   const headers = rows.shift().map(h => h.trim().toLowerCase());
-  return rows
-    .filter(r => r.some(x => (x||"").trim() !== ""))
+  return rows.filter(r => r.some(x => (x || "").trim() !== ""))
     .map(r => {
       const o = {};
       headers.forEach((h, idx) => o[h] = (r[idx] || "").trim());
@@ -60,12 +56,7 @@ const imgPathFor = (title, file) => `assets/listings/${encodeURIComponent(title)
 /* ============================
    STATE + ELEMENTS
 ============================ */
-const state = {
-  all: [],
-  imagesCache: {},
-  current: null,
-  galleryIdx: 0
-};
+const state = { all: [], imagesCache: {}, current: null, galleryIdx: 0 };
 
 const els = {
   hotWrap: $("#hotWrap"),
@@ -80,7 +71,6 @@ const els = {
   fsort: $("#fsort"),
   apply: $("#apply"),
   reset: $("#reset"),
-  // modal
   modal: $("#modal"),
   modalClose: $("#modalClose"),
   mTitle: $("#mTitle"),
@@ -95,6 +85,7 @@ const els = {
   gNext: $("#gNext"),
   waBtn: $("#waBtn"),
   callBtn: $("#callBtn"),
+  shareBtn: $("#shareBtn"),
 };
 
 /* ============================
@@ -104,7 +95,6 @@ function buildCard(item, isHotCard = false) {
   const card = document.createElement("article");
   card.className = "card";
   const thumbSrc = imgPathFor(item.title, "thumb.jpg");
-
   card.innerHTML = `
     <img class="thumb lazy" data-src="${thumbSrc}" alt="${item.title}" onerror="this.onerror=null;this.src='assets/placeholder.jpg'">
     <div class="card-body">
@@ -127,38 +117,26 @@ function render() {
   const maxP = parseFloat(els.pmax.value) || Infinity;
 
   let data = [...state.all];
-
-  if (q) data = data.filter(d => (d.title + " " + (d.location||"")).toLowerCase().includes(q));
+  if (q) data = data.filter(d => (d.title + " " + (d.location || "")).toLowerCase().includes(q));
   if (t) data = data.filter(d => (d.type || "").toLowerCase() === t.toLowerCase());
   if (l) data = data.filter(d => (d.location || "").toLowerCase() === l.toLowerCase());
-
-  // Price range filter
   data = data.filter(d => {
     const p = parseFloat(String(d.price).replace(/[^\d.]/g, "")) || 0;
     return p >= minP && p <= maxP;
   });
 
-  // Sort
-  if (s === "price_asc") data.sort((a,b)=>(+a.price||0) - (+b.price||0));
-  if (s === "price_desc") data.sort((a,b)=>(+b.price||0) - (+a.price||0));
-  if (s === "title_asc") data.sort((a,b)=>a.title.localeCompare(b.title));
+  if (s === "price_asc") data.sort((a, b) => (+a.price || 0) - (+b.price || 0));
+  if (s === "price_desc") data.sort((a, b) => (+b.price || 0) - (+a.price || 0));
+  if (s === "title_asc") data.sort((a, b) => a.title.localeCompare(b.title));
 
-  // Hot
   els.hotWrap.innerHTML = "";
   const hot = data.filter(d => isHot(d.hot));
-  if (!hot.length) els.hotEmpty.hidden = false;
-  else {
-    els.hotEmpty.hidden = true;
-    hot.forEach(d => buildCard(d, true));
-  }
+  els.hotEmpty.hidden = !!hot.length;
+  hot.forEach(d => buildCard(d, true));
 
-  // All
   els.listWrap.innerHTML = "";
-  if (!data.length) els.listEmpty.hidden = false;
-  else {
-    els.listEmpty.hidden = true;
-    data.forEach(d => buildCard(d, false));
-  }
+  els.listEmpty.hidden = !!data.length;
+  data.forEach(d => buildCard(d, false));
 
   lazyLoad();
 }
@@ -166,8 +144,8 @@ function render() {
 function populateFilters(data) {
   const types = unique(data.map(d => (d.type || "").trim()));
   const locs = unique(data.map(d => (d.location || "").trim()));
-  els.ftype.innerHTML = `<option value="">All Types</option>` + types.map(x=>`<option>${x}</option>`).join("");
-  els.floc.innerHTML = `<option value="">All Locations</option>` + locs.map(x=>`<option>${x}</option>`).join("");
+  els.ftype.innerHTML = `<option value="">All Types</option>` + types.map(x => `<option>${x}</option>`).join("");
+  els.floc.innerHTML = `<option value="">All Locations</option>` + locs.map(x => `<option>${x}</option>`).join("");
 }
 
 /* ============================
@@ -175,9 +153,8 @@ function populateFilters(data) {
 ============================ */
 async function ensureImages(item) {
   if (state.imagesCache[item.title]) return state.imagesCache[item.title];
-
   const imgs = [];
-  for (let i=1; i<=12; i++) {
+  for (let i = 1; i <= 12; i++) {
     const p = imgPathFor(item.title, `${i}.jpg`);
     const ok = await imgExists(p);
     if (ok) imgs.push(p);
@@ -188,7 +165,7 @@ async function ensureImages(item) {
 }
 
 function imgExists(url) {
-  return fetch(url, { method:'HEAD' }).then(r => r.ok).catch(()=>false);
+  return fetch(url, { method: "HEAD" }).then(r => r.ok).catch(() => false);
 }
 
 async function openModal(item) {
@@ -208,11 +185,14 @@ async function openModal(item) {
   els.waBtn.href = `${WA_BASE}?text=${msg}`;
   els.callBtn.href = `tel:${PHONE}`;
 
+  const shareURL = `${window.location.origin}?property=${encodeURIComponent(item.title)}`;
+  els.shareBtn.href = `https://wa.me/?text=${encodeURIComponent(item.title + " - " + shareURL)}`;
+
   const imgs = await ensureImages(item);
   setGalleryImage(imgs[state.galleryIdx]);
 
   els.modal.classList.add("show");
-  els.modal.setAttribute("aria-hidden","false");
+  els.modal.setAttribute("aria-hidden", "false");
 }
 
 function setGalleryImage(src) {
@@ -220,13 +200,13 @@ function setGalleryImage(src) {
   els.gImg.onerror = () => els.gImg.src = "assets/placeholder.jpg";
 }
 
-els.gPrev.addEventListener("click", ()=>{
+els.gPrev.addEventListener("click", () => {
   const imgs = state.imagesCache[state.current.title] || [];
   if (!imgs.length) return;
   state.galleryIdx = (state.galleryIdx - 1 + imgs.length) % imgs.length;
   setGalleryImage(imgs[state.galleryIdx]);
 });
-els.gNext.addEventListener("click", ()=>{
+els.gNext.addEventListener("click", () => {
   const imgs = state.imagesCache[state.current.title] || [];
   if (!imgs.length) return;
   state.galleryIdx = (state.galleryIdx + 1) % imgs.length;
@@ -235,33 +215,33 @@ els.gNext.addEventListener("click", ()=>{
 els.modalClose.addEventListener("click", closeModal);
 els.modal.addEventListener("click", e => { if (e.target === els.modal) closeModal(); });
 
-function closeModal(){
+function closeModal() {
   els.modal.classList.remove("show");
-  els.modal.setAttribute("aria-hidden","true");
+  els.modal.setAttribute("aria-hidden", "true");
 }
 
 /* ============================
    LAZY IMAGES
 ============================ */
-function lazyLoad(){
+function lazyLoad() {
   const imgs = $$(".lazy");
-  const io = new IntersectionObserver((entries, obs)=>{
-    entries.forEach(en=>{
-      if(en.isIntersecting){
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
         const img = en.target;
         img.src = img.dataset.src;
         img.classList.remove("lazy");
         obs.unobserve(img);
       }
-    })
-  },{rootMargin:"200px 0px"});
-  imgs.forEach(im=>io.observe(im));
+    });
+  }, { rootMargin: "200px 0px" });
+  imgs.forEach(im => io.observe(im));
 }
 
 /* ============================
    INIT
 ============================ */
-async function init(){
+async function init() {
   const res = await fetch(CSV_URL);
   const text = await res.text();
   const rows = csvParse(text);
@@ -281,13 +261,13 @@ async function init(){
   render();
 
   els.apply.addEventListener("click", render);
-  els.reset.addEventListener("click", ()=>{
-    els.q.value="";
-    els.ftype.value="";
-    els.floc.value="";
-    els.pmin.value="";
-    els.pmax.value="";
-    els.fsort.value="default";
+  els.reset.addEventListener("click", () => {
+    els.q.value = "";
+    els.ftype.value = "";
+    els.floc.value = "";
+    els.pmin.value = "";
+    els.pmax.value = "";
+    els.fsort.value = "default";
     render();
   });
 }
