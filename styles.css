@@ -126,3 +126,54 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
 .btn.share:hover {
   opacity: 0.9;
 }
+/* === Hot Listing Carousel === */
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.carousel::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+  border-radius: 10px;
+}
+.carousel .card {
+  flex: 0 0 auto;
+  width: 280px;
+  scroll-snap-align: start;
+}
+
+/* === Share Button === */
+.btn.share {
+  background: #f59e0b;
+  color: #fff;
+}
+.btn.share:hover {
+  opacity: 0.9;
+}
+
+/* === Toast === */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(16,24,40,0.9);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+.toast.show {
+  opacity: 1;
+}
+
