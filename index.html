@@ -1,106 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sodeng Hartanah | Propertyngam.my</title>
-  <meta name="description" content="Sodeng Hartanah — Property Consultant at One Dream Legacy East Coast" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- === HEADER === -->
   <header class="site-header">
-    <div class="header-inner container">
+    <div class="container header-inner">
+      <div class="profile">
+        <img src="assets/profile.jpg" alt="Profile" class="profile-pic">
+      </div>
+
       <div class="brand">
-        <h1 class="brand-title">Sodeng Hartanah <span class="sep">|</span> <span class="sub">Propertyngam.my</span></h1>
+        <h1 class="brand-title">Sodeng Hartanah | Propertyngam.my</h1>
         <p class="tagline">“Kalau ngammm kita deal”</p>
         <p class="job">Property Consultant at One Dream Legacy East Coast</p>
 
         <div class="socials">
-          <a class="social" href="https://www.tiktok.com/@sodenghartanah" target="_blank" aria-label="TikTok" title="TikTok">
-            <svg viewBox="0 0 48 48" class="ico"><path fill="#fff" d="M31.7 4h4.8c.6 4.9 3.1 8 7.4 9.7v5.1c-2.7-.1-5.2-.9-7.6-2.4v12.9c0 6.3-4.5 12.2-12.8 12.2-8 0-13.4-6.1-13.4-12.8 0-7.4 5.8-11.9 12.6-12.4v5.8c-3.5.6-5.8 2.5-5.8 6.2 0 3.5 2.7 6.3 6.3 6.3 4 0 6.2-2.8 6.2-6.4V4z"/></svg>
-          </a>
-          <a class="social" href="https://www.instagram.com/putera.adul" target="_blank" aria-label="Instagram" title="Instagram">
-            <svg viewBox="0 0 48 48" class="ico"><path fill="#fff" d="M24 12c3.3 0 3.7 0 5 .1 1.2.1 1.9.2 2.4.4.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.5.3 1.2.4 2.4.1 1.3.1 1.7.1 5s0 3.7-.1 5c-.1 1.2-.2 1.9-.4 2.4-.2.6-.5 1-1 1.5-.4.4-.9.7-1.5 1-.5.2-1.2.3-2.4.4-1.3.1-1.7.1-5 .1s-3.7 0-5-.1c-1.2-.1-1.9-.2-2.4-.4-.6-.2-1-.5-1.5-1-.4-.4-.7-.9-1-1.5-.2-.5-.3-1.2-.4-2.4C12 27.7 12 27.3 12 24s0-3.7.1-5c.1-1.2.2-1.9.4-2.4.2-.6.5-1 1-1.5.4-.4.9-.7 1.5-1 .5-.2 1.2-.3 2.4-.4 1.3-.1 1.7-.1 5-.1z"/></svg>
-          </a>
-          <a class="social" href="https://www.facebook.com/profile.php?id=61582819297450" target="_blank" aria-label="Facebook" title="Facebook">
-            <svg viewBox="0 0 48 48" class="ico"><path fill="#fff" d="M27 20h5l-1 6h-4v16h-6V26h-4v-6h4v-4c0-4 2-7 7-7h5v6h-3c-2 0-2 .7-2 2v3z"/></svg>
-          </a>
+          <a href="#" class="social" title="TikTok">🎵</a>
+          <a href="#" class="social" title="YouTube">▶️</a>
+          <a href="#" class="social" title="Facebook">📘</a>
         </div>
       </div>
-
-      <div class="profile">
-        <img src="assets/profile.jpg" alt="Profile" class="profile-pic" onerror="this.src='assets/placeholder.jpg'"/>
-      </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="filters container">
-      <input id="q" class="control" type="search" placeholder="Search title or location">
-      <select id="ftype" class="control"><option value="">All Types</option></select>
-      <select id="floc" class="control"><option value="">All Locations</option></select>
-      <input id="pmin" class="control" type="number" placeholder="Min Price (RM)">
-      <input id="pmax" class="control" type="number" placeholder="Max Price (RM)">
-      <select id="fsort" class="control">
-        <option value="default">Sort</option>
-        <option value="price_asc">Price: Low → High</option>
-        <option value="price_desc">Price: High → Low</option>
-        <option value="title_asc">Title A → Z</option>
-      </select>
-      <button id="apply" class="btn primary">Apply</button>
-      <button id="reset" class="btn ghost">Reset</button>
     </div>
   </header>
 
-  <main class="container">
-    <section class="hot">
-      <div class="section-title">
-        <span class="flame">🔥</span>
-        <h2>Hot Listings</h2>
-      </div>
-      <div id="hotWrap" class="carousel"></div>
-      <p id="hotEmpty" class="muted" hidden>Tiada listing ditemui.</p>
-    </section>
+  <!-- === FILTER BAR === -->
+  <div class="container">
+    <div class="filters">
+      <input type="text" id="searchInput" class="control" placeholder="Search title or location">
+      <select id="typeSelect" class="control">
+        <option>All Types</option>
+      </select>
+      <select id="locSelect" class="control">
+        <option>All Locations</option>
+      </select>
+      <input type="number" id="pmin" class="control" placeholder="Min Price (RM)">
+      <input type="number" id="pmax" class="control" placeholder="Max Price (RM)">
+      <select id="sortSelect" class="control">
+        <option>Sort</option>
+        <option value="asc">Price: Low to High</option>
+        <option value="desc">Price: High to Low</option>
+      </select>
+      <button class="btn ghost" id="resetBtn">Reset</button>
+    </div>
+  </div>
 
-    <section class="all">
+  <!-- === HOT LISTINGS === -->
+  <div class="container">
+    <div class="section-title">
+      <span class="flame">🔥</span>
+      <h2>Hot Listings</h2>
+    </div>
+
+    <!-- Carousel -->
+    <div class="carousel" id="hotListings">
+      <!-- Property cards dynamically injected by JS -->
+    </div>
+  </div>
+
+  <!-- === ALL LISTINGS === -->
+  <div class="container">
+    <div class="section-title">
       <h2>All Listings</h2>
-      <div id="listWrap" class="grid"></div>
-      <p id="listEmpty" class="muted" hidden>Tiada listing ditemui.</p>
-    </section>
-  </main>
+    </div>
 
+    <div class="grid" id="allListings">
+      <!-- Listings dynamically loaded -->
+    </div>
+  </div>
+
+  <!-- === MODAL === -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-dialog">
-      <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+      <button id="modalClose" class="modal-close">&times;</button>
       <div class="modal-body">
         <h3 id="mTitle"></h3>
-        <div class="m-meta">
-          <p><strong>Price:</strong> <span id="mPrice"></span></p>
-          <p><strong>Type:</strong> <span id="mType"></span> • <strong>Location:</strong> <span id="mLoc"></span></p>
-          <p><strong>Specs:</strong> <span id="mSpecs"></span></p>
-          <p id="mMapWrap"><span class="pin">📍</span> <a id="mMap" target="_blank" rel="noopener">View Map</a></p>
-        </div>
+        <p><strong>Price:</strong> <span id="mPrice"></span></p>
+        <p><strong>Type:</strong> <span id="mType"></span> • <strong>Location:</strong> <span id="mLoc"></span></p>
+        <p><strong>Specs:</strong> <span id="mSpecs"></span></p>
+        <p id="mMapWrap"><span class="pin">📍</span><a id="mMap" href="#" target="_blank">View Map</a></p>
 
-        <div class="gallery" id="gallery">
-          <button class="gbtn left" id="gPrev" aria-label="Prev">‹</button>
-          <div class="gframe"><img id="gImg" src="" alt="Property image" /></div>
-          <button class="gbtn right" id="gNext" aria-label="Next">›</button>
+        <div class="gallery">
+          <button id="gPrev" class="gbtn left">‹</button>
+          <div class="gframe">
+            <img id="gImg" src="assets/placeholder.jpg" alt="Gallery">
+          </div>
+          <button id="gNext" class="gbtn right">›</button>
         </div>
 
         <div class="modal-actions">
-          <a id="waBtn" class="btn wa" target="_blank" rel="noopener">WhatsApp</a>
-          <a id="callBtn" class="btn call" target="_blank" rel="noopener">Call</a>
-          <button id="shareBtn" class="btn share">Share</button>
+          <a id="waBtn" class="btn wa" title="WhatsApp"><span>WhatsApp</span></a>
+          <a id="callBtn" class="btn call" title="Call"><span>Call</span></a>
+          <button id="shareBtn" class="btn share" title="Share"><span>Share</span></button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- === TOAST (for link copied) === -->
   <div id="toast" class="toast">Link copied!</div>
 
+  <!-- === JS === -->
   <script src="app.js"></script>
+
 </body>
 </html>
