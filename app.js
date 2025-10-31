@@ -163,7 +163,10 @@ async function openModal(item) {
   els.callBtn.href = `tel:${PHONE}`;
 
   const shareURL = `${window.location.origin}?property=${encodeURIComponent(item.title)}`;
-  els.shareBtn.onclick = () => copyLink(shareURL);
+  els.shareBtn.onclick = e => {
+    e.preventDefault(); // stop any mobile auto-share
+    copyLink(shareURL);
+  };
 
   const imgs = await ensureImages(item);
   setGalleryImage(imgs[state.galleryIdx]);
@@ -184,6 +187,7 @@ function closeModal() {
 /* === Copy Link === */
 function copyLink(url) {
   navigator.clipboard.writeText(url).then(() => {
+    els.toast.textContent = "✅ Link copied!";
     els.toast.classList.add("show");
     setTimeout(() => els.toast.classList.remove("show"), 2000);
   });
