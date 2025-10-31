@@ -61,14 +61,6 @@ const els = {
   hotEmpty: $("#hotEmpty"),
   listWrap: $("#listWrap"),
   listEmpty: $("#listEmpty"),
-  q: $("#q"),
-  ftype: $("#ftype"),
-  floc: $("#floc"),
-  pmin: $("#pmin"),
-  pmax: $("#pmax"),
-  fsort: $("#fsort"),
-  apply: $("#apply"),
-  reset: $("#reset"),
   modal: $("#modal"),
   modalClose: $("#modalClose"),
   mTitle: $("#mTitle"),
@@ -102,40 +94,23 @@ function buildCard(item, isHotCard = false) {
       <p class="meta">${item.type || "-"} • ${item.location || "-"}</p>
     </div>
   `;
-  card.addEventListener("click", () => openModal(item));
+  card.addEventListener("click", () => {
+    openModal(item);
+    history.pushState({ property: item.title }, "", "?property=" + encodeURIComponent(item.title));
+  });
   (isHotCard ? els.hotWrap : els.listWrap).appendChild(card);
 }
 
 function render() {
-  const q = els.q.value.trim().toLowerCase();
-  const t = els.ftype.value;
-  const l = els.floc.value;
-  const s = els.fsort.value;
-
-  const minP = parseFloat(els.pmin.value) || 0;
-  const maxP = parseFloat(els.pmax.value) || Infinity;
-
-  let data = [...state.all];
-  if (q) data = data.filter(d => (d.title + " " + (d.location || "")).toLowerCase().includes(q));
-  if (t) data = data.filter(d => (d.type || "").toLowerCase() === t.toLowerCase());
-  if (l) data = data.filter(d => (d.location || "").toLowerCase() === l.toLowerCase());
-  data = data.filter(d => {
-    const p = parseFloat(String(d.price).replace(/[^\d.]/g, "")) || 0;
-    return p >= minP && p <= maxP;
-  });
-
-  if (s === "price_asc") data.sort((a, b) => (+a.price || 0) - (+b.price || 0));
-  if (s === "price_desc") data.sort((a, b) => (+b.price || 0) - (+a.price || 0));
-  if (s === "title_asc") data.sort((a, b) => a.title.localeCompare(b.title));
-
   els.hotWrap.innerHTML = "";
-  const hot = data.filter(d => isHot(d.hot));
+  els.listWrap.innerHTML = "";
+
+  const hot = state.all.filter(d => isHot(d.hot));
   els.hotEmpty.hidden = !!hot.length;
   hot.forEach(d => buildCard(d, true));
 
-  els.listWrap.innerHTML = "";
-  els.listEmpty.hidden = !!data.length;
-  data.forEach(d => buildCard(d, false));
+  els.listEmpty.hidden = !!state.all.length;
+  state.all.forEach(d => buildCard(d, false));
 
   lazyLoad();
 }
@@ -168,6 +143,15 @@ async function openModal(item) {
 
   els.modal.classList.add("show");
   els.modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+/* === Close Modal === */
+function closeModal() {
+  els.modal.classList.remove("show");
+  els.modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  history.pushState({}, "", window.location.origin); // reset URL
 }
 
 /* === Copy Link === */
@@ -178,7 +162,37 @@ function copyLink(url) {
   });
 }
 
-/* === Lazy Load === */
+/* === Gallery Navigation === */
+function setGalleryImage(src) {
+  els.gImg.src = src;
+  els.gImg.onerror = () => els.gImg.src = "assets/placeholder.jpg";
+}
+els.gPrev.addEventListener("click", () => {
+  const imgs = state.imagesCache[state.current.title] || [];
+  if (!imgs.length) return;
+  state.galleryIdx = (state.galleryIdx - 1 + imgs.length) % imgs.length;
+  setGalleryImage(imgs[state.galleryIdx]);
+});
+els.gNext.addEventListener("click", () => {
+  const imgs = state.imagesCache[state.current.title] || [];
+  if (!imgs.length) return;
+  state.galleryIdx = (state.galleryIdx + 1) % imgs.length;
+  setGalleryImage(imgs[state.galleryIdx]);
+});
+els.modalClose.addEventListener("click", closeModal);
+els.modal.addEventListener("click", e => { if (e.target === els.modal) closeModal(); });
+window.addEventListener("popstate", e => {
+  if (e.state && e.state.property) {
+    const match = state.all.find(x => x.title === e.state.property);
+    if (match) openModal(match);
+  } else {
+    closeModal();
+  }
+});
+
+/* ============================
+   UTILS
+============================ */
 function lazyLoad() {
   const imgs = $$(".lazy");
   const io = new IntersectionObserver((entries, obs) => {
@@ -194,23 +208,17 @@ function lazyLoad() {
   imgs.forEach(im => io.observe(im));
 }
 
-/* === Image Handling === */
 async function ensureImages(item) {
   if (state.imagesCache[item.title]) return state.imagesCache[item.title];
   const imgs = [];
   for (let i = 1; i <= 12; i++) {
     const p = imgPathFor(item.title, `${i}.jpg`);
-    const ok = await fetch(p, { method: 'HEAD' }).then(r => r.ok).catch(() => false);
+    const ok = await fetch(p, { method: "HEAD" }).then(r => r.ok).catch(() => false);
     if (ok) imgs.push(p);
   }
   if (!imgs.length) imgs.push("assets/placeholder.jpg");
   state.imagesCache[item.title] = imgs;
   return imgs;
-}
-
-function setGalleryImage(src) {
-  els.gImg.src = src;
-  els.gImg.onerror = () => els.gImg.src = "assets/placeholder.jpg";
 }
 
 /* ============================
@@ -222,7 +230,6 @@ async function init() {
   const rows = csvParse(text);
 
   state.all = rows.map(r => ({
-    ref: r.ref || "",
     title: r.title || r.displaytitle || "",
     price: r.price || "",
     type: r.type || "",
@@ -234,12 +241,15 @@ async function init() {
 
   render();
 
-  // Auto open property if shared link used
-  const urlParams = new URLSearchParams(window.location.search);
-  const shared = urlParams.get("property");
+  // Auto open shared property
+  const params = new URLSearchParams(window.location.search);
+  const shared = params.get("property");
   if (shared) {
     const match = state.all.find(x => x.title.toLowerCase() === decodeURIComponent(shared).toLowerCase());
-    if (match) openModal(match);
+    if (match) {
+      openModal(match);
+      history.replaceState({ property: match.title }, "", window.location.href);
+    }
   }
 }
 init();
