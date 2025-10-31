@@ -3,8 +3,6 @@
 ============================ */
 const CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNxseyugYylsAgoCbCRQruAKzk6fxLIyg_dhF9JvhbVgVX2ryQqHwIz4a2OUT8asciB1iSI7dQg1Uo/pub?gid=0&single=true&output=csv";
-
-// Contact settings
 const PHONE = "01169429832";
 const WA_BASE = "https://wa.me/6" + PHONE;
 
@@ -86,6 +84,7 @@ const els = {
   waBtn: $("#waBtn"),
   callBtn: $("#callBtn"),
   shareBtn: $("#shareBtn"),
+  toast: $("#toast"),
 };
 
 /* ============================
@@ -141,33 +140,9 @@ function render() {
   lazyLoad();
 }
 
-function populateFilters(data) {
-  const types = unique(data.map(d => (d.type || "").trim()));
-  const locs = unique(data.map(d => (d.location || "").trim()));
-  els.ftype.innerHTML = `<option value="">All Types</option>` + types.map(x => `<option>${x}</option>`).join("");
-  els.floc.innerHTML = `<option value="">All Locations</option>` + locs.map(x => `<option>${x}</option>`).join("");
-}
-
 /* ============================
-   MODAL & GALLERY
+   MODAL
 ============================ */
-async function ensureImages(item) {
-  if (state.imagesCache[item.title]) return state.imagesCache[item.title];
-  const imgs = [];
-  for (let i = 1; i <= 12; i++) {
-    const p = imgPathFor(item.title, `${i}.jpg`);
-    const ok = await imgExists(p);
-    if (ok) imgs.push(p);
-  }
-  if (!imgs.length) imgs.push("assets/placeholder.jpg");
-  state.imagesCache[item.title] = imgs;
-  return imgs;
-}
-
-function imgExists(url) {
-  return fetch(url, { method: "HEAD" }).then(r => r.ok).catch(() => false);
-}
-
 async function openModal(item) {
   state.current = item;
   state.galleryIdx = 0;
@@ -186,7 +161,7 @@ async function openModal(item) {
   els.callBtn.href = `tel:${PHONE}`;
 
   const shareURL = `${window.location.origin}?property=${encodeURIComponent(item.title)}`;
-  els.shareBtn.href = `https://wa.me/?text=${encodeURIComponent(item.title + " - " + shareURL)}`;
+  els.shareBtn.onclick = () => copyLink(shareURL);
 
   const imgs = await ensureImages(item);
   setGalleryImage(imgs[state.galleryIdx]);
@@ -195,34 +170,15 @@ async function openModal(item) {
   els.modal.setAttribute("aria-hidden", "false");
 }
 
-function setGalleryImage(src) {
-  els.gImg.src = src;
-  els.gImg.onerror = () => els.gImg.src = "assets/placeholder.jpg";
+/* === Copy Link === */
+function copyLink(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    els.toast.classList.add("show");
+    setTimeout(() => els.toast.classList.remove("show"), 2000);
+  });
 }
 
-els.gPrev.addEventListener("click", () => {
-  const imgs = state.imagesCache[state.current.title] || [];
-  if (!imgs.length) return;
-  state.galleryIdx = (state.galleryIdx - 1 + imgs.length) % imgs.length;
-  setGalleryImage(imgs[state.galleryIdx]);
-});
-els.gNext.addEventListener("click", () => {
-  const imgs = state.imagesCache[state.current.title] || [];
-  if (!imgs.length) return;
-  state.galleryIdx = (state.galleryIdx + 1) % imgs.length;
-  setGalleryImage(imgs[state.galleryIdx]);
-});
-els.modalClose.addEventListener("click", closeModal);
-els.modal.addEventListener("click", e => { if (e.target === els.modal) closeModal(); });
-
-function closeModal() {
-  els.modal.classList.remove("show");
-  els.modal.setAttribute("aria-hidden", "true");
-}
-
-/* ============================
-   LAZY IMAGES
-============================ */
+/* === Lazy Load === */
 function lazyLoad() {
   const imgs = $$(".lazy");
   const io = new IntersectionObserver((entries, obs) => {
@@ -236,6 +192,25 @@ function lazyLoad() {
     });
   }, { rootMargin: "200px 0px" });
   imgs.forEach(im => io.observe(im));
+}
+
+/* === Image Handling === */
+async function ensureImages(item) {
+  if (state.imagesCache[item.title]) return state.imagesCache[item.title];
+  const imgs = [];
+  for (let i = 1; i <= 12; i++) {
+    const p = imgPathFor(item.title, `${i}.jpg`);
+    const ok = await fetch(p, { method: 'HEAD' }).then(r => r.ok).catch(() => false);
+    if (ok) imgs.push(p);
+  }
+  if (!imgs.length) imgs.push("assets/placeholder.jpg");
+  state.imagesCache[item.title] = imgs;
+  return imgs;
+}
+
+function setGalleryImage(src) {
+  els.gImg.src = src;
+  els.gImg.onerror = () => els.gImg.src = "assets/placeholder.jpg";
 }
 
 /* ============================
@@ -257,18 +232,14 @@ async function init() {
     hot: r.hot || ""
   })).filter(x => x.title);
 
-  populateFilters(state.all);
   render();
 
-  els.apply.addEventListener("click", render);
-  els.reset.addEventListener("click", () => {
-    els.q.value = "";
-    els.ftype.value = "";
-    els.floc.value = "";
-    els.pmin.value = "";
-    els.pmax.value = "";
-    els.fsort.value = "default";
-    render();
-  });
+  // Auto open property if shared link used
+  const urlParams = new URLSearchParams(window.location.search);
+  const shared = urlParams.get("property");
+  if (shared) {
+    const match = state.all.find(x => x.title.toLowerCase() === decodeURIComponent(shared).toLowerCase());
+    if (match) openModal(match);
+  }
 }
 init();
