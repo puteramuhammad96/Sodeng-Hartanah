@@ -264,12 +264,22 @@ async function init() {
 
   // Auto-refresh filters
   [els.q, els.ftype, els.floc, els.pmin, els.pmax, els.fsort].forEach(el => {
-    el.addEventListener("input", render);
-    el.addEventListener("change", render);
+    el.addEventListener("input", () => {
+      render();
+      updateFilterHighlight();
+    });
+    el.addEventListener("change", () => {
+      render();
+      updateFilterHighlight();
+    });
   });
 
   // Manual buttons
-  els.apply.addEventListener("click", render);
+  els.apply.addEventListener("click", () => {
+    render();
+    updateFilterHighlight();
+  });
+
   els.reset.addEventListener("click", () => {
     els.q.value = "";
     els.ftype.value = "";
@@ -278,6 +288,7 @@ async function init() {
     els.pmax.value = "";
     els.fsort.value = "default";
     render();
+    updateFilterHighlight();
   });
 
   // Auto open shared property
@@ -292,6 +303,22 @@ async function init() {
   }
 }
 
+/* === Filter Highlight === */
+function updateFilterHighlight() {
+  const anyActive =
+    els.q.value.trim() ||
+    els.ftype.value ||
+    els.floc.value ||
+    els.pmin.value ||
+    els.pmax.value ||
+    (els.fsort.value && els.fsort.value !== "default");
+
+  const filterBox = document.querySelector(".filters");
+  if (anyActive) filterBox.classList.add("active");
+  else filterBox.classList.remove("active");
+}
+
+/* === Populate Filter Dropdowns === */
 function populateFilters(data) {
   const types = unique(data.map(d => (d.type || "").trim()));
   const locs = unique(data.map(d => (d.location || "").trim()));
