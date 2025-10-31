@@ -94,7 +94,7 @@ html,body{
 .modal-dialog{
   background:#fff;
   border-radius:18px;
-  max-width:980px;
+  max-width:900px;
   width:100%;
   box-shadow:var(--shadow);
   position:relative;
@@ -111,17 +111,17 @@ html,body{
   cursor:pointer;
   opacity:.6;
 }
-.modal-body{padding:20px}
-.modal-body h3{margin:0 0 10px;font:700 20px/1.3 Inter}
+.modal-body{padding:18px}
+.modal-body h3{margin:0 0 8px;font:700 20px/1.3 Inter}
 .m-meta p{margin:4px 0 0}
 .pin{margin-right:6px}
 
-/* === Modal Action Buttons (compact mobile version) === */
+/* === Modal Action Buttons (icon-only version) === */
 .modal-actions {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 14px;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .btn.wa,
@@ -130,39 +130,36 @@ html,body{
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font-weight: 600;
-  font-size: 15px;
+  font-size: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   border: none;
-  border-radius: 10px;
-  padding: 10px 0;
   cursor: pointer;
   transition: all 0.2s ease;
   color: #fff;
-  text-decoration: none; /* ✅ removed underline */
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  width: 100%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-
-.btn.wa::before { content: "💬"; font-size: 17px; }
-.btn.call::before { content: "📞"; font-size: 17px; }
-.btn.share::before { content: "🔗"; font-size: 17px; }
 
 .btn.wa { background: #22c55e; }
 .btn.call { background: #0ea5e9; }
 .btn.share { background: #f59e0b; }
 
+.btn.wa::before { content: "💬"; }
+.btn.call::before { content: "📞"; }
+.btn.share::before { content: "🔗"; }
+
 .btn.wa:hover,
 .btn.call:hover,
 .btn.share:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   opacity: 0.95;
 }
 
 /* Gallery */
 .gallery{position:relative;margin-top:12px}
-.gframe{height:360px;background:#eff4fb;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.gframe{height:340px;background:#eff4fb;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center}
 #gImg{max-width:100%;max-height:100%;object-fit:contain}
 .gbtn{position:absolute;top:50%;transform:translateY(-50%);border:0;background:rgba(16,24,40,.65);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer}
 .gbtn.left{left:10px}
@@ -184,7 +181,7 @@ html,body{
 /* === Toast === */
 .toast {
   position: fixed;
-  bottom: 30px;
+  bottom: 25px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(16,24,40,0.9);
@@ -206,12 +203,12 @@ html,body{
   .filters{gap:8px}
   .control{min-width:140px}
   #pmin,#pmax{max-width:140px}
-  .gframe{height:260px}
-  .modal-dialog{max-width:90%;border-radius:14px;}
+  .gframe{height:240px}
+  .modal-dialog{max-width:92%;border-radius:14px;}
   .modal-body h3{font-size:18px}
   .btn.wa, .btn.call, .btn.share {
-    font-size:14px;
-    padding:9px 0;
-    gap:5px;
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
   }
 }
