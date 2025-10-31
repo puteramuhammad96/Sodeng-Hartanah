@@ -44,6 +44,15 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
 .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
 .btn:hover{opacity:.95}
 
+/* Filter highlight when active */
+.filters.active {
+  border: 2px solid var(--blue);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(37,99,235,0.05);
+  transition: all 0.25s ease;
+}
+
 /* Sections */
 .section-title{display:flex;align-items:center;gap:8px;margin:24px 0 12px}
 .section-title h2{margin:0;font:700 20px/1.2 Inter}
@@ -100,9 +109,44 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
 .modal-body h3{margin:0 0 12px;font:700 22px/1.3 Inter}
 .m-meta p{margin:4px 0 0}
 .pin{margin-right:6px}
-.modal-actions{display:flex;gap:10px;margin-top:14px}
-.btn.wa{background:var(--green);color:#fff}
-.btn.call{background:#0ea5e9;color:#fff}
+
+/* === Modal Action Buttons (Updated) === */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.btn.wa,
+.btn.call,
+.btn.share {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #fff;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+.btn.wa { background: #22c55e; }
+.btn.call { background: #0ea5e9; }
+.btn.share { background: #f59e0b; }
+
+.btn.wa:hover,
+.btn.call:hover,
+.btn.share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+  opacity: 0.95;
+}
 
 /* Gallery */
 .gallery{position:relative;margin-top:14px}
@@ -125,17 +169,10 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
 .carousel::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.15);border-radius: 10px;}
 .carousel .card {flex: 0 0 auto;width: 280px;scroll-snap-align: start;}
 
-/* === Share Button === */
-.btn.share {
-  background: #f59e0b;
-  color: #fff;
-}
-.btn.share:hover {opacity: 0.9;}
-
 /* === Toast === */
 .toast {
   position: fixed;
-  bottom: 30px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(16,24,40,0.9);
@@ -158,14 +195,5 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
   .control{min-width:140px}
   #pmin,#pmax{max-width:140px}
   .gframe{height:300px}
+  .btn.wa, .btn.call, .btn.share {flex: 1 1 100%;}
 }
-
-/* === Filter Active State === */
-.filters.active {
-  border: 2px solid var(--blue);
-  border-radius: 12px;
-  padding: 12px;
-  background: rgba(37,99,235,0.05);
-  transition: all 0.25s ease;
-}
-
