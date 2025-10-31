@@ -56,7 +56,6 @@
   </header>
 
   <main class="container">
-    <!-- Hot Listings Carousel -->
     <section class="hot">
       <div class="section-title">
         <span class="flame">🔥</span>
@@ -66,7 +65,6 @@
       <p id="hotEmpty" class="muted" hidden>Tiada listing ditemui.</p>
     </section>
 
-    <!-- All Listings -->
     <section class="all">
       <h2>All Listings</h2>
       <div id="listWrap" class="grid"></div>
@@ -74,7 +72,6 @@
     </section>
   </main>
 
-  <!-- Modal -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-dialog">
       <button class="modal-close" id="modalClose" aria-label="Close">×</button>
@@ -89,20 +86,20 @@
 
         <div class="gallery" id="gallery">
           <button class="gbtn left" id="gPrev" aria-label="Prev">‹</button>
-          <div class="gframe">
-            <img id="gImg" src="" alt="Property image" />
-          </div>
+          <div class="gframe"><img id="gImg" src="" alt="Property image" /></div>
           <button class="gbtn right" id="gNext" aria-label="Next">›</button>
         </div>
 
         <div class="modal-actions">
           <a id="waBtn" class="btn wa" target="_blank" rel="noopener">WhatsApp</a>
           <a id="callBtn" class="btn call" target="_blank" rel="noopener">Call</a>
-          <a id="shareBtn" class="btn share" target="_blank" rel="noopener">Share</a>
+          <button id="shareBtn" class="btn share">Share</button>
         </div>
       </div>
     </div>
   </div>
+
+  <div id="toast" class="toast">Link copied!</div>
 
   <script src="app.js"></script>
 </body>
