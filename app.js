@@ -61,6 +61,14 @@ const els = {
   hotEmpty: $("#hotEmpty"),
   listWrap: $("#listWrap"),
   listEmpty: $("#listEmpty"),
+  q: $("#q"),
+  ftype: $("#ftype"),
+  floc: $("#floc"),
+  pmin: $("#pmin"),
+  pmax: $("#pmax"),
+  fsort: $("#fsort"),
+  apply: $("#apply"),
+  reset: $("#reset"),
   modal: $("#modal"),
   modalClose: $("#modalClose"),
   mTitle: $("#mTitle"),
@@ -102,15 +110,34 @@ function buildCard(item, isHotCard = false) {
 }
 
 function render() {
-  els.hotWrap.innerHTML = "";
-  els.listWrap.innerHTML = "";
+  const q = els.q.value.trim().toLowerCase();
+  const t = els.ftype.value;
+  const l = els.floc.value;
+  const s = els.fsort.value;
+  const minP = parseFloat(els.pmin.value) || 0;
+  const maxP = parseFloat(els.pmax.value) || Infinity;
 
-  const hot = state.all.filter(d => isHot(d.hot));
+  let data = [...state.all];
+  if (q) data = data.filter(d => (d.title + " " + (d.location || "")).toLowerCase().includes(q));
+  if (t) data = data.filter(d => (d.type || "").toLowerCase() === t.toLowerCase());
+  if (l) data = data.filter(d => (d.location || "").toLowerCase() === l.toLowerCase());
+  data = data.filter(d => {
+    const p = parseFloat(String(d.price).replace(/[^\d.]/g, "")) || 0;
+    return p >= minP && p <= maxP;
+  });
+
+  if (s === "price_asc") data.sort((a, b) => (+a.price || 0) - (+b.price || 0));
+  if (s === "price_desc") data.sort((a, b) => (+b.price || 0) - (+a.price || 0));
+  if (s === "title_asc") data.sort((a, b) => a.title.localeCompare(b.title));
+
+  els.hotWrap.innerHTML = "";
+  const hot = data.filter(d => isHot(d.hot));
   els.hotEmpty.hidden = !!hot.length;
   hot.forEach(d => buildCard(d, true));
 
-  els.listEmpty.hidden = !!state.all.length;
-  state.all.forEach(d => buildCard(d, false));
+  els.listWrap.innerHTML = "";
+  els.listEmpty.hidden = !!data.length;
+  data.forEach(d => buildCard(d, false));
 
   lazyLoad();
 }
@@ -151,7 +178,7 @@ function closeModal() {
   els.modal.classList.remove("show");
   els.modal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
-  history.pushState({}, "", window.location.origin); // reset URL
+  history.pushState({}, "", window.location.origin);
 }
 
 /* === Copy Link === */
@@ -162,7 +189,7 @@ function copyLink(url) {
   });
 }
 
-/* === Gallery Navigation === */
+/* === Gallery Controls === */
 function setGalleryImage(src) {
   els.gImg.src = src;
   els.gImg.onerror = () => els.gImg.src = "assets/placeholder.jpg";
@@ -181,14 +208,7 @@ els.gNext.addEventListener("click", () => {
 });
 els.modalClose.addEventListener("click", closeModal);
 els.modal.addEventListener("click", e => { if (e.target === els.modal) closeModal(); });
-window.addEventListener("popstate", e => {
-  if (e.state && e.state.property) {
-    const match = state.all.find(x => x.title === e.state.property);
-    if (match) openModal(match);
-  } else {
-    closeModal();
-  }
-});
+window.addEventListener("popstate", e => { if (!e.state) closeModal(); });
 
 /* ============================
    UTILS
@@ -222,7 +242,7 @@ async function ensureImages(item) {
 }
 
 /* ============================
-   INIT
+   FILTERS + INIT
 ============================ */
 async function init() {
   const res = await fetch(CSV_URL);
@@ -239,7 +259,26 @@ async function init() {
     hot: r.hot || ""
   })).filter(x => x.title);
 
+  populateFilters(state.all);
   render();
+
+  // Auto-refresh filters
+  [els.q, els.ftype, els.floc, els.pmin, els.pmax, els.fsort].forEach(el => {
+    el.addEventListener("input", render);
+    el.addEventListener("change", render);
+  });
+
+  // Manual buttons
+  els.apply.addEventListener("click", render);
+  els.reset.addEventListener("click", () => {
+    els.q.value = "";
+    els.ftype.value = "";
+    els.floc.value = "";
+    els.pmin.value = "";
+    els.pmax.value = "";
+    els.fsort.value = "default";
+    render();
+  });
 
   // Auto open shared property
   const params = new URLSearchParams(window.location.search);
@@ -252,4 +291,12 @@ async function init() {
     }
   }
 }
+
+function populateFilters(data) {
+  const types = unique(data.map(d => (d.type || "").trim()));
+  const locs = unique(data.map(d => (d.location || "").trim()));
+  els.ftype.innerHTML = `<option value="">All Types</option>` + types.map(x => `<option>${x}</option>`).join("");
+  els.floc.innerHTML = `<option value="">All Locations</option>` + locs.map(x => `<option>${x}</option>`).join("");
+}
+
 init();
