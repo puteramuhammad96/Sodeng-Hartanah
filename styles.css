@@ -159,3 +159,13 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
   #pmin,#pmax{max-width:140px}
   .gframe{height:300px}
 }
+
+/* === Filter Active State === */
+.filters.active {
+  border: 2px solid var(--blue);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(37,99,235,0.05);
+  transition: all 0.25s ease;
+}
+
