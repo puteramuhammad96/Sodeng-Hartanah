@@ -37,19 +37,13 @@
       </div>
     </div>
 
-    <!-- Filters (with Min/Max Price) -->
+    <!-- Filters -->
     <div class="filters container">
       <input id="q" class="control" type="search" placeholder="Search title or location">
-      <select id="ftype" class="control">
-        <option value="">All Types</option>
-      </select>
-      <select id="floc" class="control">
-        <option value="">All Locations</option>
-      </select>
-
+      <select id="ftype" class="control"></select>
+      <select id="floc" class="control"></select>
       <input id="pmin" class="control" type="number" placeholder="Min Price (RM)">
       <input id="pmax" class="control" type="number" placeholder="Max Price (RM)">
-
       <select id="fsort" class="control">
         <option value="default">Sort</option>
         <option value="price_asc">Price: Low → High</option>
@@ -68,7 +62,12 @@
         <span class="flame">🔥</span>
         <h2>Hot Listings</h2>
       </div>
-      <div id="hotWrap" class="grid"></div>
+
+      <!-- ✅ Added carousel wrapper -->
+      <div id="hotCarousel" class="carousel">
+        <div id="hotWrap" class="grid"></div>
+      </div>
+
       <p id="hotEmpty" class="muted" hidden>Tiada listing ditemui.</p>
     </section>
 
