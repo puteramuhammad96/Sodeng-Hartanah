@@ -1,18 +1,15 @@
 :root{
-  --bg: #0f1722;
-  --card: #fff;
-  --muted: #9aa6bf;
-  --accent1: #ff5f00; /* oren terang */
-  --accent2: #ffbd4a; /* oren lembut */
-  --accent-dark: #d24a00;
-  --radius: 14px;
-  --shadow: 0 10px 30px rgba(15,23,34,0.18);
-  --maxw: 480px;
+  --accent1:#ff5f00;
+  --accent2:#ffbd4a;
+  --accent-dark:#d24a00;
+  --muted:#9aa6bf;
+  --shadow:0 10px 30px rgba(15,23,34,0.18);
+  --radius:14px;
+  --maxw:480px;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{
-  height:100%;
+body{
   font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
   background:#fff;
   color:#0b1220;
@@ -27,13 +24,9 @@ html,body{
   padding:40px 16px;
   background:linear-gradient(180deg,#fff 0%,#fff 100%);
 }
-main.page{
-  max-width:var(--maxw);
-  margin-inline:auto;
-  width:100%;
-}
+main.page{max-width:var(--maxw);margin-inline:auto;width:100%}
 
-/* ========== HERO SECTION ========== */
+/* ========== HERO ========== */
 .hero{
   display:flex;
   flex-direction:column;
@@ -47,16 +40,9 @@ main.page{
   border:1px solid rgba(15,23,34,0.04);
 }
 .avatar{
-  width:120px;
-  height:120px;
-  border-radius:999px;
-  object-fit:cover;
-  border:4px solid #fff;
+  width:120px;height:120px;border-radius:999px;
+  object-fit:cover;border:4px solid #fff;
   box-shadow:0 8px 22px rgba(15,23,34,0.12);
-}
-.brand{
-  margin:0;
-  line-height:1.2;
 }
 .brand-main{
   display:block;
@@ -71,15 +57,12 @@ main.page{
   font-family:Montserrat,Inter,sans-serif;
   font-weight:800;
   font-size:20px;
-  color:var(--accent-dark);
   transform:skewX(-10deg) rotate(-4deg);
   background:linear-gradient(90deg,var(--accent1),var(--accent2));
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
 }
-
-/* Perkataan “Ngam” lebih jelas */
 .brand-tilt .ngam{
   font-style:italic;
   display:inline-block;
@@ -91,25 +74,25 @@ main.page{
   transform:skewX(-10deg) rotate(-4deg);
 }
 
-/* tagline bawah */
+/* tagline dua baris */
 .tag{
-  margin:8px 0 0;
+  margin:10px 0 0;
   color:var(--muted);
   font-size:15px;
   font-weight:600;
   display:flex;
+  flex-direction:column;
   align-items:center;
-  justify-content:center;
-  gap:6px;
+  line-height:1.3;
 }
+.tag .line1 strong{color:#0b1220}
 
-/* ========== BUTTON SECTION ========== */
+/* ========== BUTTONS ========== */
 .buttons{
   display:flex;
   flex-direction:column;
   gap:12px;
-  margin-top:20px;
-  padding:14px 4px;
+  margin-top:22px;
 }
 .btn{
   display:inline-flex;
@@ -122,56 +105,45 @@ main.page{
   font-weight:700;
   font-size:16px;
   border:0;
-  color:#fff;
+  transition:all .15s ease;
   cursor:pointer;
-  transition:transform .14s ease,box-shadow .14s ease;
 }
 .btn span{line-height:1}
-.btn:active{transform:translateY(1px)}
 .btn.primary{
-  background:linear-gradient(90deg,var(--accent1),var(--accent2));
-  box-shadow:0 8px 20px rgba(255,125,30,0.18);
+  background:linear-gradient(90deg,#ff5f00 0%, #ffbd4a 100%);
+  color:#fff;
+  box-shadow:0 6px 14px rgba(255,125,30,0.3);
+}
+.btn.primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 20px rgba(255,125,30,0.4);
+}
+.btn.social{
+  background:linear-gradient(90deg,#111,#000);
+  color:#fff;
 }
 .btn.ghost{
   background:#fff;
   color:#0b1220;
   border:1px solid rgba(11,18,32,0.1);
 }
-.btn.social{
-  background:linear-gradient(90deg,#111,#000);
-  color:#fff;
-}
-.btn:hover{
-  opacity:0.95;
-  transform:translateY(-1px);
-}
-.btn.primary{font-size:18px;padding:14px 20px;border-radius:14px}
+.btn:hover{opacity:.95}
 
-/* ========== FOOTER ========== */
+/* footer */
 .foot{
-  margin-top:18px;
+  margin-top:20px;
   text-align:center;
   color:var(--muted);
   font-size:13px;
 }
-.small{
-  margin-top:6px;
-  color:var(--muted);
-  font-size:12px;
-}
+.small{margin-top:6px;font-size:12px;color:var(--muted)}
 
-/* ========== RESPONSIVE ========== */
+/* desktop alignment */
 @media(min-width:900px){
-  .page{padding:56px}
-  .hero{flex-direction:row;gap:20px;padding:18px}
-  .brand-main{font-size:24px}
-  .brand-tilt{font-size:22px}
-  .buttons{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:10px}
+  .hero{flex-direction:row;align-items:center;justify-content:space-between;text-align:left}
+  .avatar{width:150px;height:150px}
+  .brand-main{font-size:26px}
+  .brand-tilt{font-size:24px}
+  .buttons{flex-direction:row;flex-wrap:wrap;justify-content:center}
   .btn{min-width:160px}
-}
-
-/* focus accessibility */
-.btn:focus{
-  outline:3px solid rgba(255,159,67,0.18);
-  outline-offset:4px;
 }
