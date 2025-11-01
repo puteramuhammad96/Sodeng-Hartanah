@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sodeng Hartanah — Ejen Hartanah Paling Ngam</title>
+  <meta name="description" content="Sodeng Hartanah — Kalau ngammm kita deal" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <img class="avatar" src="assets/profile.jpg" alt="Putera - Sodeng Hartanah" onerror="this.src='assets/placeholder.jpg'">
+      <h1 class="brand">
+        <span class="brand-main">Sodeng Hartanah</span>
+        <span class="brand-tilt">Ejen Hartanah Paling <span class="ngam">Ngam</span></span>
+      </h1>
+      <p class="tag">kalau <strong>ngammm</strong> kita deal 🔑</p>
+    </header>
+
+    <section class="buttons">
+      <a class="btn primary" href="/#hot" aria-label="Hot Listings">🔥 Hot Listings</a>
+      <a class="btn" href="/" aria-label="All Listings">🏠 Semua Listing</a>
+      <a class="btn" href="https://wa.me/601169429832?text=Hai%20Sodeng%20Hartanah%2C%20saya%20nak%20tahu%20pasal%20listing" aria-label="WhatsApp" target="_blank" rel="noopener">💬 WhatsApp</a>
+      <a class="btn social" href="https://www.tiktok.com/@sodenghartanah" aria-label="TikTok" target="_blank" rel="noopener">🎥 TikTok</a>
+      <a class="btn social" href="https://www.instagram.com/putera.adul" aria-label="Instagram" target="_blank" rel="noopener">📸 Instagram</a>
+      <a class="btn social" href="https://www.facebook.com/profile.php?id=61582819297450" aria-label="Facebook" target="_blank" rel="noopener">📘 Facebook</a>
+      <a class="btn ghost" href="tel:01169429832" aria-label="Call">☎️ Call</a>
+    </section>
+
+    <footer class="foot">
+      <p>Property Consultant • One Dream Legacy East Coast</p>
+      <p class="small">© <span id="year"></span> Sodeng Hartanah — Kalau ngammm kita deal</p>
+    </footer>
+  </main>
+
+  <script>
+    // small helper
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // Make sure clicking links opens (if used inside in-app browser)
+  </script>
+</body>
+</html>
