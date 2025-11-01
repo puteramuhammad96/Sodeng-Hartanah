@@ -2,66 +2,176 @@
   --bg: #0f1722;
   --card: #fff;
   --muted: #9aa6bf;
-  --accent1: #ff5f00; /* orange */
-  --accent2: #ffbd4a; /* lighter orange */
+  --accent1: #ff5f00; /* oren terang */
+  --accent2: #ffbd4a; /* oren lembut */
   --accent-dark: #d24a00;
   --radius: 14px;
-  --glass: rgba(255,255,255,0.06);
   --shadow: 0 10px 30px rgba(15,23,34,0.18);
   --maxw: 480px;
-  --safe-pad: 18px;
 }
 
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;background:linear-gradient(180deg,#fff 0%, #fff 60%, #fff 100%);color:#0b1220;-webkit-font-smoothing:antialiased}
-.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 16px;background:linear-gradient(180deg, #fff 0%, #fff 100%)}
-main.page{max-width:var(--maxw);margin-inline:auto;width:100%}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  height:100%;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  background:#fff;
+  color:#0b1220;
+  -webkit-font-smoothing:antialiased;
+}
+.page{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:40px 16px;
+  background:linear-gradient(180deg,#fff 0%,#fff 100%);
+}
+main.page{
+  max-width:var(--maxw);
+  margin-inline:auto;
+  width:100%;
+}
 
-/* Hero */
-.hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:22px;background:linear-gradient(180deg, rgba(255,95,0,0.06), rgba(255,189,74,0.03));border-radius:18px;box-shadow:var(--shadow);border:1px solid rgba(15,23,34,0.04)}
-.avatar{width:120px;height:120px;border-radius:999px;object-fit:cover;border:4px solid #fff;box-shadow:0 8px 22px rgba(15,23,34,0.12)}
-.brand{margin:0;padding:0;line-height:1}
-.brand-main{display:block;font-family:Montserrat,Inter,system-ui;font-weight:800;font-size:20px;color:#0b1220}
-.brand-tilt{display:block;margin-top:6px;font-family:Montserrat,Inter,system-ui;font-weight:800;font-size:18px;color:var(--accent-dark);transform:skewX(-10deg) rotate(-4deg);background:linear-gradient(90deg,var(--accent1),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.brand-tilt .ngam{font-style:italic;display:inline-block;padding:2px 6px;border-radius:6px;background:rgba(0,0,0,0.06);transform:skewX(-10deg) rotate(-4deg)}
-.tag{margin:6px 0 0;color:var(--muted);font-size:14px;font-weight:600;text-transform:none}
+/* ========== HERO SECTION ========== */
+.hero{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:10px;
+  padding:22px;
+  background:linear-gradient(180deg,rgba(255,95,0,0.06),rgba(255,189,74,0.03));
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(15,23,34,0.04);
+}
+.avatar{
+  width:120px;
+  height:120px;
+  border-radius:999px;
+  object-fit:cover;
+  border:4px solid #fff;
+  box-shadow:0 8px 22px rgba(15,23,34,0.12);
+}
+.brand{
+  margin:0;
+  line-height:1.2;
+}
+.brand-main{
+  display:block;
+  font-family:Montserrat,Inter,sans-serif;
+  font-weight:800;
+  font-size:22px;
+  color:#0b1220;
+}
+.brand-tilt{
+  display:block;
+  margin-top:6px;
+  font-family:Montserrat,Inter,sans-serif;
+  font-weight:800;
+  font-size:20px;
+  color:var(--accent-dark);
+  transform:skewX(-10deg) rotate(-4deg);
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
 
-/* Buttons grid */
-.buttons{display:flex;flex-direction:column;gap:12px;margin-top:18px;padding:14px 4px}
+/* Perkataan “Ngam” lebih jelas */
+.brand-tilt .ngam{
+  font-style:italic;
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:8px;
+  background:linear-gradient(90deg,#ff7b00,#ffc04a);
+  color:#fff;
+  box-shadow:0 2px 6px rgba(255,123,0,0.4);
+  transform:skewX(-10deg) rotate(-4deg);
+}
+
+/* tagline bawah */
+.tag{
+  margin:8px 0 0;
+  color:var(--muted);
+  font-size:15px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+/* ========== BUTTON SECTION ========== */
+.buttons{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:20px;
+  padding:14px 4px;
+}
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  text-decoration:none;padding:14px 18px;border-radius:12px;font-weight:700;
-  font-size:16px;box-shadow:none;border:0;color:#fff;
-  transition:transform .14s ease, box-shadow .14s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-decoration:none;
+  padding:14px 18px;
+  border-radius:12px;
+  font-weight:700;
+  font-size:16px;
+  border:0;
+  color:#fff;
+  cursor:pointer;
+  transition:transform .14s ease,box-shadow .14s ease;
 }
+.btn span{line-height:1}
 .btn:active{transform:translateY(1px)}
 .btn.primary{
   background:linear-gradient(90deg,var(--accent1),var(--accent2));
   box-shadow:0 8px 20px rgba(255,125,30,0.18);
 }
 .btn.ghost{
-  background:transparent;color:#0b1220;border:1px solid rgba(11,18,32,0.06);
+  background:#fff;
+  color:#0b1220;
+  border:1px solid rgba(11,18,32,0.1);
 }
 .btn.social{
-  background:linear-gradient(90deg,#111 0%, rgba(0,0,0,0.8) 100%); color:#fff;
+  background:linear-gradient(90deg,#111,#000);
+  color:#fff;
 }
-
-/* Slight size tweaks for primary */
+.btn:hover{
+  opacity:0.95;
+  transform:translateY(-1px);
+}
 .btn.primary{font-size:18px;padding:14px 20px;border-radius:14px}
 
-/* Footer */
-.foot{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
-.small{margin-top:6px;color:var(--muted);font-size:12px}
+/* ========== FOOTER ========== */
+.foot{
+  margin-top:18px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+.small{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:12px;
+}
 
-/* Responsive: central narrow card on mobile */
+/* ========== RESPONSIVE ========== */
 @media(min-width:900px){
   .page{padding:56px}
   .hero{flex-direction:row;gap:20px;padding:18px}
-  .brand-main{font-size:22px}
-  .brand-tilt{font-size:20px}
+  .brand-main{font-size:24px}
+  .brand-tilt{font-size:22px}
   .buttons{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:10px}
   .btn{min-width:160px}
 }
 
-/* accessibility: focus */
-.btn:focus{outline:3px solid rgba(255,159,67,0.18);outline-offset:4px}
+/* focus accessibility */
+.btn:focus{
+  outline:3px solid rgba(255,159,67,0.18);
+  outline-offset:4px;
+}
