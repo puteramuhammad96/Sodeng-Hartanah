@@ -163,11 +163,21 @@ function render() {
   lazyLoad();
 }
 
+/* ============================
+   POPULATE FILTERS (SORTED)
+============================ */
 function populateFilters(data) {
-  const types = unique(data.map(d => (d.type || "").trim()));
-  const locs = unique(data.map(d => (d.location || "").trim()));
-  els.ftype.innerHTML = `<option value="">All Types</option>` + types.map(x=>`<option>${x}</option>`).join("");
-  els.floc.innerHTML = `<option value="">All Locations</option>` + locs.map(x=>`<option>${x}</option>`).join("");
+  // ambil unique values & sort ikut abjad
+  const types = unique(data.map(d => (d.type || "").trim())).sort((a, b) => a.localeCompare(b));
+  const locs = unique(data.map(d => (d.location || "").trim())).sort((a, b) => a.localeCompare(b));
+
+  els.ftype.innerHTML =
+    `<option value="">All Types</option>` +
+    types.map(x => `<option>${x}</option>`).join("");
+
+  els.floc.innerHTML =
+    `<option value="">All Locations</option>` +
+    locs.map(x => `<option>${x}</option>`).join("");
 }
 
 /* ============================
