@@ -98,7 +98,7 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
 }
 
 /* =========================================
-   HOT LISTINGS CAROUSEL (mobile only)
+   HOT LISTINGS CAROUSEL (mobile only - 1 card full width)
 ========================================= */
 @media (max-width: 820px) {
   .hot .carousel {
@@ -120,7 +120,16 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
   }
 
   .hot .card {
-    flex: 0 0 calc(50% - 8px);
+    flex: 0 0 100%;
     scroll-snap-align: start;
+  }
+
+  /* Optional: sedikit padding tepi untuk nampak kemas */
+  .hot .carousel {
+    padding-right: 16px;
+  }
+
+  .hot .card img.thumb {
+    height: 220px;
   }
 }
