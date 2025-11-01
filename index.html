@@ -38,7 +38,8 @@
     </div>
 
     <!-- Filters -->
-    <div class="filters container">
+    <!-- NOTE: id="filtersBar" used by the sticky script -->
+    <div id="filtersBar" class="filters container">
       <input id="q" class="control" type="search" placeholder="Search title or location">
       <select id="ftype" class="control"></select>
       <select id="floc" class="control"></select>
@@ -109,5 +110,30 @@
   </div>
 
   <script src="app.js"></script>
+
+  <!-- Sticky + animation script for filter bar -->
+  <script>
+    (function(){
+      const filters = document.getElementById('filtersBar');
+      if (!filters) return;
+
+      // Toggle 'stuck' class when filter top hits viewport top
+      function checkSticky(){
+        const rect = filters.getBoundingClientRect();
+        if (rect.top <= 0) {
+          if (!filters.classList.contains('stuck')) filters.classList.add('stuck');
+        } else {
+          if (filters.classList.contains('stuck')) filters.classList.remove('stuck');
+        }
+      }
+
+      // run on scroll and on load/resize
+      window.addEventListener('scroll', checkSticky, { passive: true });
+      window.addEventListener('resize', checkSticky);
+      window.addEventListener('load', checkSticky);
+      document.addEventListener('DOMContentLoaded', checkSticky);
+    })();
+  </script>
+
 </body>
 </html>
