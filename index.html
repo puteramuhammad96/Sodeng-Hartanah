@@ -33,46 +33,35 @@
       </div>
 
       <div class="profile">
-        <img src="assets/profile.jpg" alt="Profile" class="profile-pic" onerror="this.src='assets/placeholder.jpg'"/>
+        <img src="assets/profile.jpg" alt="Profile" class="profile-pic" />
       </div>
-    </div>
-
-    <!-- Filters -->
-    <!-- NOTE: id="filtersBar" used by the sticky script -->
-    <div id="filtersBar" class="filters container">
-      <input id="q" class="control" type="search" placeholder="Search title or location">
-      <select id="ftype" class="control"></select>
-      <select id="floc" class="control"></select>
-      <input id="pmin" class="control" type="number" placeholder="Min Price (RM)">
-      <input id="pmax" class="control" type="number" placeholder="Max Price (RM)">
-      <select id="fsort" class="control">
-        <option value="default">Sort</option>
-        <option value="price_asc">Price: Low → High</option>
-        <option value="price_desc">Price: High → Low</option>
-        <option value="title_asc">Title A → Z</option>
-      </select>
-      <button id="apply" class="btn primary">Apply</button>
-      <button id="reset" class="btn ghost">Reset</button>
     </div>
   </header>
 
+  <!-- ✅ Filter Bar (moved outside header) -->
+  <div id="filtersBar" class="filters container">
+    <input id="q" class="control" type="search" placeholder="Search title or location">
+    <select id="ftype" class="control"></select>
+    <select id="floc" class="control"></select>
+    <input id="pmin" class="control" type="number" placeholder="Min Price (RM)">
+    <input id="pmax" class="control" type="number" placeholder="Max Price (RM)">
+    <select id="fsort" class="control">
+      <option value="default">Sort</option>
+      <option value="price_asc">Price: Low → High</option>
+      <option value="price_desc">Price: High → Low</option>
+      <option value="title_asc">Title A → Z</option>
+    </select>
+    <button id="apply" class="btn primary">Apply</button>
+    <button id="reset" class="btn ghost">Reset</button>
+  </div>
+
   <main class="container">
-    <!-- Hot -->
     <section class="hot">
-      <div class="section-title">
-        <span class="flame">🔥</span>
-        <h2>Hot Listings</h2>
-      </div>
-
-      <!-- ✅ Added carousel wrapper -->
-      <div id="hotCarousel" class="carousel">
-        <div id="hotWrap" class="grid"></div>
-      </div>
-
+      <div class="section-title"><span class="flame">🔥</span><h2>Hot Listings</h2></div>
+      <div id="hotCarousel" class="carousel"><div id="hotWrap" class="grid"></div></div>
       <p id="hotEmpty" class="muted" hidden>Tiada listing ditemui.</p>
     </section>
 
-    <!-- All -->
     <section class="all">
       <h2>All Listings</h2>
       <div id="listWrap" class="grid"></div>
@@ -80,7 +69,6 @@
     </section>
   </main>
 
-  <!-- Modal -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-dialog">
       <button class="modal-close" id="modalClose" aria-label="Close">×</button>
@@ -92,48 +80,27 @@
           <p><strong>Specs:</strong> <span id="mSpecs"></span></p>
           <p id="mMapWrap"><span class="pin">📍</span> <a id="mMap" target="_blank" rel="noopener">View Map</a></p>
         </div>
-
         <div class="gallery" id="gallery">
-          <button class="gbtn left" id="gPrev" aria-label="Prev">‹</button>
-          <div class="gframe">
-            <img id="gImg" src="" alt="Property image" />
-          </div>
-          <button class="gbtn right" id="gNext" aria-label="Next">›</button>
+          <button class="gbtn left" id="gPrev">‹</button>
+          <div class="gframe"><img id="gImg" src="" alt="Property image" /></div>
+          <button class="gbtn right" id="gNext">›</button>
         </div>
-
         <div class="modal-actions">
-          <a id="waBtn" class="btn wa" target="_blank" rel="noopener">WhatsApp</a>
-          <a id="callBtn" class="btn call" target="_blank" rel="noopener">Call</a>
+          <a id="waBtn" class="btn wa" target="_blank">WhatsApp</a>
+          <a id="callBtn" class="btn call" target="_blank">Call</a>
         </div>
       </div>
     </div>
   </div>
 
   <script src="app.js"></script>
-
-  <!-- Sticky + animation script for filter bar -->
   <script>
-    (function(){
-      const filters = document.getElementById('filtersBar');
-      if (!filters) return;
-
-      // Toggle 'stuck' class when filter top hits viewport top
-      function checkSticky(){
-        const rect = filters.getBoundingClientRect();
-        if (rect.top <= 0) {
-          if (!filters.classList.contains('stuck')) filters.classList.add('stuck');
-        } else {
-          if (filters.classList.contains('stuck')) filters.classList.remove('stuck');
-        }
-      }
-
-      // run on scroll and on load/resize
-      window.addEventListener('scroll', checkSticky, { passive: true });
-      window.addEventListener('resize', checkSticky);
-      window.addEventListener('load', checkSticky);
-      document.addEventListener('DOMContentLoaded', checkSticky);
-    })();
+    // Sticky filter animation
+    const filters = document.getElementById("filtersBar");
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 20) filters.classList.add("stuck");
+      else filters.classList.remove("stuck");
+    });
   </script>
-
 </body>
 </html>
