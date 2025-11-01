@@ -96,3 +96,31 @@ html,body{margin:0;padding:0;color:var(--ink);font-family:Inter,system-ui,-apple
   #pmin,#pmax{max-width:140px}
   .gframe{height:300px}
 }
+
+/* =========================================
+   HOT LISTINGS CAROUSEL (mobile only)
+========================================= */
+@media (max-width: 820px) {
+  .hot .carousel {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+
+  .hot .carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hot .grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+    scroll-snap-align: start;
+    min-width: 100%;
+  }
+
+  .hot .card {
+    flex: 0 0 calc(50% - 8px);
+    scroll-snap-align: start;
+  }
+}
